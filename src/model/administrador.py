@@ -6,8 +6,6 @@ class Administrador(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(255), nullable=False)
     cpf = db.Column(db.String(11), unique=True, nullable=False)
-    uf_documento = db.Column(db.String(2), nullable=False)
-    cargo = db.Column(db.String(100), nullable=False)
     endereco_id = db.Column(db.Integer, db.ForeignKey('enderecos.id'))
     endereco = db.relationship('Endereco', backref=db.backref('administradores', lazy=True))
     email = db.Column(db.String(255), unique=True, nullable=False)

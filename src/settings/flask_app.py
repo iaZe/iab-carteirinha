@@ -31,5 +31,6 @@ def create_app():
     register_routes_admin(app, token_authenticator)
     register_routes_architect(app, token_authenticator)
     register_routes_user(app, token_authenticator)
+    registrar_rota_estudante(app, token_authenticator)
 
     return app
