@@ -1,10 +1,10 @@
 import { Box, Paper, styled, Typography, Slide } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
-import { DadosPessoais } from "../../components/Cadastro/DadosPessoais";
-import { EnderecoPessoal } from "../../components/Cadastro/EnderecoPessoal";
-import { FormContext } from "../../context/FormContext";
-import { EnderecoComercial } from "../../components/Cadastro/EnderecoComercial";
-import { InformacoesExtras } from "../../components/Cadastro/InformacoesExtras";
+import { DadosPessoais } from "../components/Cadastro/DadosPessoais";
+import { EnderecoPessoal } from "../components/Cadastro/EnderecoPessoal";
+import { FormContext } from "../context/FormContext";
+import { EnderecoComercial } from "../components/Cadastro/EnderecoComercial";
+import { InformacoesExtras } from "../components/Cadastro/InformacoesExtras";
 
 const StyledTitle = styled(Typography)({
   fontSize: "2rem",
@@ -18,8 +18,10 @@ const StyledSubtitle = styled(Typography)({
 
 const StyledPaper = styled(Paper)({
   maxWidth: "900px",
-  paddingX: "2.5rem",
-  paddingY: "2rem",
+  paddingLeft: "2.5rem",
+  paddingRight: "2.5rem",
+  paddingTop: "2rem",
+  paddingBottom: "2rem",
   display: "flex",
   flexDirection: "column",
 });
