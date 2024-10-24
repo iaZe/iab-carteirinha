@@ -62,3 +62,22 @@ export const TelefoneMask = forwardRef<HTMLInputElement, CustomProps>(
         );
     },
 );
+
+export const AnoMask = forwardRef<HTMLInputElement, CustomProps>(
+    function TextMaskCustom(props, ref) {
+        const { onChange, ...other } = props;
+        return (
+            <IMaskInput
+                {...other}
+                mask="0000"
+                definitions={{
+                    '#': /[1-9]/,
+                }}
+                inputRef={ref}
+                onAccept={(value) => onChange({ target: { name: props.name, value } })}
+                overwrite
+            />
+        );
+    },
+);
+

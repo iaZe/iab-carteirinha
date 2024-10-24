@@ -13,29 +13,29 @@ const mobileStyles = {
 
 
 export function EnderecoComercial() {
-    const { formData, updateFormData } = useContext(FormContext)
-    const { endereco_primario } = formData;
-    const { cep, cidade, logradouro, bairro, numero, complemento } = endereco_primario;
+    const { formData, updateFormData, errors, addError } = useContext(FormContext)
+    const { endereco_secundario } = formData;
+    const { cep, cidade, logradouro, bairro, numero, complemento } = endereco_secundario;
 
-    const [error, setError] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
 
 
+    
     const handleAvancar = () => {
-        const requiredFields = ['cep', 'logradouro', 'cidade', 'bairro', 'numero'];
         const newErrors = [];
 
-        for (const field of requiredFields) {
-            if (!formData[field]) {
-                newErrors.push(field);
-            }
-        }
-        setError(newErrors);
+        if (cep.length < 9) newErrors.push("endereco_secundario.cep");
+        if (logradouro.trim().length < 2) newErrors.push("endereco_secundario.logradouro");
+        if (cidade.trim().length < 2) newErrors.push("endereco_secundario.cidade");
+        if (bairro.trim().length < 2) newErrors.push("endereco_secundario.bairro");
+        if (numero.trim().length < 1) newErrors.push("endereco_secundario.numero");
+        if (complemento.trim().length > 50) newErrors.push("endereco_secundario.complemento");
 
         if (newErrors.length > 0) {
+            addError(newErrors);
             return false;
         }
-        return true;
+        return newErrors.length === 0;
     };
 
 
@@ -44,7 +44,7 @@ export function EnderecoComercial() {
             <Box sx={{ display: "flex", alignItems: "center", gap: "2rem" }}>
                         <TextField
                             name="endereco_secundario.cep"
-                            error={error.includes("cep")}
+                            error={errors.includes("cep")}
                             label="CEP*"
                             sx={mobileStyles}
                             slotProps={{
@@ -65,7 +65,7 @@ export function EnderecoComercial() {
                 <TextField
                     fullWidth
                     name="endereco_secundario.logradouro"
-                    error={error.includes("logradouro")}
+                    error={errors.includes("logradouro")}
                     label="Logradouro*"
                     value={logradouro}
                     onChange={updateFormData}
@@ -75,14 +75,14 @@ export function EnderecoComercial() {
                 <TextField
                     sx={{ width: "40%", ...mobileStyles }}
                     name="endereco_secundario.cidade"
-                    error={error.includes("cidade")}
+                    error={errors.includes("cidade")}
                     label="Cidade*"
                     value={cidade}
                     onChange={updateFormData}
                 />
                 <TextField
                     name="endereco_secundario.bairro"
-                    error={error.includes("bairro")}
+                    error={errors.includes("bairro")}
                     label="Bairro*"
                     value={bairro}
                     onChange={updateFormData}
@@ -91,7 +91,7 @@ export function EnderecoComercial() {
             <Box sx={{ display: "flex", gap: "2rem", ...mobileStyles }}>
                 <TextField
                     name="endereco_secundario.numero"
-                    error={error.includes("numero")}
+                    error={errors.includes("numero")}
                     label="Número*"
                     value={numero}
                     onChange={updateFormData}

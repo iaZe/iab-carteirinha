@@ -3,6 +3,7 @@ import { Box, Checkbox, FormControlLabel, TextField, Typography } from "@mui/mat
 import { useState } from "react";
 import { ActionButtons } from "../ActionButtons";
 import { FormContext } from '../../context/FormContext';
+import { AnoMask } from '../MaskedInput';
 
 const mobileStyles = {
     "@media (max-width: 600px)": {
@@ -19,9 +20,22 @@ export function InformacoesExtras() {
     const [error, setError] = useState<string[]>([]);
 
     const handleAvancar = () => {
-        const requiredFields = ["site", "numeroCau"];
         const newErrors = [];
-        setError(newErrors);
+        if (publicarChecked) {
+            if (!(site.includes('http://'))) {
+                newErrors.push("site")
+            }
+            if (instituicao_ensino.trim().length < 2) {
+                newErrors.push("instituicao_ensino")
+            }
+            if (numero_cau.trim().length < 2) {
+                newErrors.push("numero_cau")
+            }
+            if (ano_estimado_conclusao < 1900 || ano_estimado_conclusao > new Date().getFullYear()) {
+                newErrors.push("ano_estimado_conclusao")
+            }
+            setError(newErrors);
+        }
 
         if (newErrors.length > 0) {
             return false;
@@ -32,13 +46,12 @@ export function InformacoesExtras() {
     return (
         <>
             <Box>
-                <Typography sx={{ fontWeight: "medium", color: "#00000099" }}>
+                <Typography sx={{ fontWeight: "medium", color: "#00000099", maxWidth: "30rem" }}>
                     Você deseja publicar seus dados básicos no nosso Banco de Arquitetos?
                 </Typography>
                 <Box
                     sx={{
                         display: "flex",
-                        justifyContent: "center",
                         gap: "1rem"
                     }}
                 >
@@ -105,6 +118,7 @@ export function InformacoesExtras() {
                     label="Instituição de Ensino (Estudantes)"
                     name="instituicao_ensino"
                     value={instituicao_ensino}
+                    error={error.includes("instituicao_ensino")}
                     onChange={updateFormData}
                 />
             </Box>
@@ -126,7 +140,13 @@ export function InformacoesExtras() {
                     label="Ano Estimado de Conclusão"
                     name="ano_estimado_conclusao"
                     value={ano_estimado_conclusao}
+                    error={error.includes("ano_estimado_conclusao")}
                     onChange={updateFormData}
+                    slotProps={{
+                        input: {
+                            inputComponent: AnoMask as never,
+                        },
+                    }}
                 />
             </Box>
             <ActionButtons handleCheckFields={handleAvancar} />

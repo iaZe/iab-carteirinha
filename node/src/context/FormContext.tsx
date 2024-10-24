@@ -27,7 +27,7 @@ export interface FormObjectProps {
     email: string;
     foto?: File | null;
     site: string;
-    numero_cau: number;
+    numero_cau: string;
     instituicao_ensino: string;
     ano_estimado_conclusao: number;
     endereco_primario: Endereco;
@@ -46,7 +46,7 @@ interface FormProviderValueProps {
     goToNextPage: () => void;
     updateFormData: (e: ChangeEvent<HTMLInputElement>) => void;
     errors: string[];
-    addError: (error: string) => void;
+    addError: (newErrors: string[]) => void;
 }
 
 const defaultFormData = {
@@ -63,7 +63,7 @@ const defaultFormData = {
     data_fim_filiacao: "",
     foto: null,
     site: "",
-    numero_cau: 0,
+    numero_cau: "",
     instituicao_ensino: "",
     ano_estimado_conclusao: 0,
     profissao: "Arquiteto",
@@ -112,6 +112,7 @@ export const FormProvider = ({ children }: FormProviderProps) => {
     };
     const goToPreviousPage = () => {
         if (currentPage > 0) {
+            setErrors([])
             setCurrentPage(currentPage - 1);
         }
     };
@@ -129,6 +130,7 @@ export const FormProvider = ({ children }: FormProviderProps) => {
         }
         if (name.split('.').length > 1) {
             const parentField = name.split('.')[0] as 'endereco_primario' | 'endereco_secundario';
+            console.log(formData)
             setFormData((prevState) => ({
                 ...prevState,
                 [parentField]: { ...prevState[parentField], [name.split('.')[1]]: value },
@@ -138,8 +140,8 @@ export const FormProvider = ({ children }: FormProviderProps) => {
         }
     };
 
-    const addError = (error: string) => {
-        setErrors([...errors, error]);
+    const addError = (newErrors: string[]) => {
+        setErrors((prevState) => [...prevState, ...newErrors]);
     };
 
     return (

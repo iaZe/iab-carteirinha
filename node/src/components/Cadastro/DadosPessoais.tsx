@@ -12,24 +12,23 @@ import { CpfMask, TelefoneMask } from "../MaskedInput";
 
 export function DadosPessoais() {
     const { formData, updateFormData, errors, addError } = useContext(FormContext)
-    const { nome, email, cpf, celular, fixo, profissao } = formData;
+    const { nome, email, cpf, celular, fixo } = formData;
 
     const [checkbox, setCheckbox] = useState("Arquiteto")
 
 
     const handleAvancar = () => {
-        const requiredFields = ["nome", "email", "cpf", "celular"];
-        const newErrors = requiredFields.filter((field) => !formData[field]);
+        const newErrors = []
+        if (nome.length < 10) newErrors.push("nome");
+        if (!email.includes("@")) newErrors.push("email");
+        if (cpf.length < 14) newErrors.push("cpf");
+        if (celular.length < 14) newErrors.push("celular");
 
-        if (nome.length < 10) addError("nome");
-        if (!email.includes("@")) addError("email");
-        if (cpf.length < 14) addError("cpf");
-        if (celular.length < 14) addError("celular");
-
-        if (errors.length > 0) {
+        if (newErrors.length > 0) {
+            addError(newErrors)
             return false;
         }
-        return newErrors.length === 0;
+        return errors.length === 0;
     };
 
     return (
