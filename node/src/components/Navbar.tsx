@@ -19,13 +19,13 @@ const StyledNavbar = styled(Box)({
 })
 
 const links = [
-    { label: "Página Inicial", url: "#" },
-    { label: "Institucional", url: "#" },
-    { label: "Eventos", url: "#" },
-    { label: "Concursos", url: "#" },
-    { label: "Convênios", url: "#" },
-    { label: "Notícias", url: "#" },
-    { label: "Associe-se", url: "#" },
+    { label: "Página Inicial", url: "/" },
+    { label: "Institucional", url: "/institucional" },
+    // { label: "Eventos", url: "/eventos" },
+    // { label: "Concursos", url: "/concursos" },
+    { label: "Convênios", url: "/convenios" },
+    // { label: "Notícias", url: "/noticias" },
+    { label: "Login", url: "/login" },
 ];
 
 const menuOpenStyles = {
@@ -45,7 +45,7 @@ const closedMenuStyles = {
     }
 }
 
-export function Navbar({ isMenuOpen }) {
+export function Navbar({ isMenuOpen }: { isMenuOpen: boolean }) {
     const { pathname } = useLocation();
     return (
         <StyledNavbar
