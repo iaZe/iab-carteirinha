@@ -1,10 +1,11 @@
 import App from "./App";
-import { Cadastro } from "./pages/cadastro/Cadastro";
+import { Cadastro } from "./pages/Cadastro";
 import { Login } from "./pages/Login";
 import { FormProvider } from "./context/FormContext";
 import { Pagamento } from "./pages/Pagamento";
 import { Institucional } from "./pages/Institucional";
 import { Convenios } from "./pages/Convenios";
+import AguardandoConfirmacao from "./pages/AguardandoConfirmacao";
 
 export const routes = [
     {
@@ -20,6 +21,10 @@ export const routes = [
                 element: <Pagamento />
             },
             {
+                path: "aguardando-confirmacao",
+                element: <AguardandoConfirmacao />
+            },
+            {
                 path: "login",
                 element: <Login />
             },
@@ -30,6 +35,10 @@ export const routes = [
             {
                 path: "convenios",
                 element: <Convenios />
+            },
+            {
+                path: "perfil",
+                element: <div>Página de Perfil</div>
             }
         ]
     }
