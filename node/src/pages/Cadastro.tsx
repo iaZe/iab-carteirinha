@@ -17,13 +17,14 @@ const StyledSubtitle = styled(Typography)({
 });
 
 const StyledPaper = styled(Paper)({
-  maxWidth: "900px",
   paddingLeft: "2.5rem",
   paddingRight: "2.5rem",
   paddingTop: "2rem",
   paddingBottom: "2rem",
   display: "flex",
   flexDirection: "column",
+  justifyContent: "center",
+  width: "100%",
 });
 
 const StyledBox = styled(Box)({
@@ -99,6 +100,12 @@ export function Cadastro() {
       mountOnEnter
       unmountOnExit
     >
+      <Box sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}>
+
       <StyledPaper>
         <StyledTitle sx={{ fontWeight: "medium" }}>{title}</StyledTitle>
         {currentPage === 2 && (
@@ -108,6 +115,7 @@ export function Cadastro() {
         )}
         <StyledBox>{component}</StyledBox>
       </StyledPaper>
+        </Box>
     </Slide>
   );
 }
