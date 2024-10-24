@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
@@ -20,18 +20,19 @@ export function Layout({ children }: LayoutProps) {
         }
       }, [toggleMenu]);
     return (
-        <Box>
+        <Box
+          sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+        >
             <Navbar isMenuOpen={toggleMenu} />
             <MenuButton isMenuOpen={toggleMenu} handleToggleMenu={()=> setToggleMenu(!toggleMenu)} />
-            <Box sx={{
-                maxWidth: "75rem",
-                mx: "auto",
+            <Container sx={{
+                flexGrow: 1,
                 py: "3.5rem",
                 "@media (max-width: 600px)": {
                 paddingTop: "0",
-                paddingBottom: "2rem"
+                paddingBottom: "2rem",
                 },
-            }}>{children}</Box>
+            }}>{children}</Container>
             <Footer/>
         </Box>
     );
