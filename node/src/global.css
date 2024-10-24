@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #333333;
+    color: #ffffff;
+}
+
+body,
+button,
+input,
+select {
+    font-family: "Roboto", sans-serif;
+}
+
+/* Cores principais */
+:root {
+    --red-300: #bf1515;
+    --red-400: #b22222;
+    --red-500: #aa0000;
+    --red-600: #8b0000;
+    
+    --gray-500: #999999;
+    --gray-600: #6b6b6b;
+}
