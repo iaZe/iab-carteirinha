@@ -1,7 +1,7 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useContext } from 'react';
 import { Box, CircularProgress, TextField } from "@mui/material";
 import { ActionButtons } from "../ActionButtons";
-import { FormObjectProps } from '../../context/FormContext';
+import { FormContext } from '../../context/FormContext';
 import { CepMask } from '../MaskedInput';
 
 const mobileStyles = {
@@ -13,35 +13,19 @@ const mobileStyles = {
 
 
 export function EnderecoPessoal() {
-    const [formValues, setFormValues] = useState<FormObjectProps>({
-        cep: '',
-        logradouro: '',
-        cidade: '',
-        bairro: '',
-        numero: '',
-        complemento: ''
-    });
+    const { formData, updateFormData } = useContext(FormContext)
+    const { endereco_primario } = formData;
+    const { cep, cidade, logradouro, bairro, numero, complemento } = endereco_primario;
 
     const [error, setError] = useState<string[]>([]);
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        if (error.includes(name)) {
-            setError(error.filter((fieldName) => fieldName !== name));
-        }
-        setFormValues((prevState) => ({
-            ...prevState,
-            [name]: value,
-        }));
-    };
+    const [loading, setLoading] = useState(false);
 
     const handleAvancar = () => {
-        return true
         const requiredFields = ['cep', 'logradouro', 'cidade', 'bairro', 'numero'];
         const newErrors = [];
 
         for (const field of requiredFields) {
-            if (!formValues[field]) {
+            if (!formData[field]) {
                 newErrors.push(field);
             }
         }
@@ -58,7 +42,7 @@ export function EnderecoPessoal() {
             <Box sx={{ display: "flex", alignItems: "center", gap: "2rem" }}>
 
                         <TextField
-                            name="cep"
+                            name="endereco_primario.cep"
                             error={error.includes("cep")}
                             label="CEP*"
                             sx={mobileStyles}
@@ -67,50 +51,55 @@ export function EnderecoPessoal() {
                                     inputComponent: CepMask as never,
                                 }
                             }}
+                            value={cep}
+                            onChange={updateFormData}
                         />
-
-                <CircularProgress size={35} color="error" />
+                {
+                    loading 
+                    ? <CircularProgress size={35} color="error" />
+                    : null
+                }
             </Box>
             <Box>
                 <TextField
                     fullWidth
-                    name="logradouro"
+                    name="endereco_primario.logradouro"
                     error={error.includes("logradouro")}
-                    label="Logradouro"
-                    value={formValues.logradouro}
-                    onChange={handleChange}
+                    label="Logradouro*"
+                    value={logradouro}
+                    onChange={updateFormData}
                 />
             </Box>
             <Box sx={{ display: "flex", gap: "2rem", ...mobileStyles }}>
                 <TextField
                     sx={{ width: "40%", ...mobileStyles }}
-                    name="cidade"
+                    name="endereco_primario.cidade"
                     error={error.includes("cidade")}
-                    label="Cidade"
-                    value={formValues.cidade}
-                    onChange={handleChange}
+                    label="Cidade*"
+                    value={cidade}
+                    onChange={updateFormData}
                 />
                 <TextField
-                    name="bairro"
+                    name="endereco_primario.bairro"
                     error={error.includes("bairro")}
-                    label="Bairro"
-                    value={formValues.bairro}
-                    onChange={handleChange}
+                    label="Bairro*"
+                    value={bairro}
+                    onChange={updateFormData}
                 />
             </Box>
             <Box sx={{ display: "flex", gap: "2rem", ...mobileStyles }}>
                 <TextField
-                    name="numero"
+                    name="endereco_primario.numero"
                     error={error.includes("numero")}
-                    label="Número"
-                    value={formValues.numero}
-                    onChange={handleChange}
+                    label="Número*"
+                    value={numero}
+                    onChange={updateFormData}
                 />
                 <TextField
-                    name="complemento"
+                    name="endereco_primario.complemento"
                     label="Complemento"
-                    value={formValues.complemento}
-                    onChange={handleChange}
+                    value={complemento}
+                    onChange={updateFormData}
                 />
             </Box>
             <ActionButtons handleCheckFields={handleAvancar} />

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Checkbox, FormControlLabel, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { ActionButtons } from "../ActionButtons";
+import { FormContext } from '../../context/FormContext';
 
 const mobileStyles = {
     "@media (max-width: 600px)": {
@@ -11,35 +12,15 @@ const mobileStyles = {
 }
 
 export function InformacoesExtras() {
-    const [formValues, setFormValues] = useState({
-        site: "",
-        instituicaoEnsino: "",
-        numeroCau: "",
-        anoConclusao: ""
-    });
+    const { formData, updateFormData } = useContext(FormContext)
+    const { site, instituicao_ensino, numero_cau, ano_estimado_conclusao } = formData;
 
     const [publicarChecked, setPublicarChecked] = useState(true);
     const [error, setError] = useState<string[]>([]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        if (error.includes(name)) {
-            setError(error.filter((fieldName) => fieldName !== name));
-        }
-        setFormValues((prevState) => ({
-            ...prevState,
-            [name]: value,
-        }));
-    };
-
     const handleAvancar = () => {
         const requiredFields = ["site", "numeroCau"];
         const newErrors = [];
-        for (const field of requiredFields) {
-            if (!formValues[field] || formValues[field].trim().length < 2) {
-                newErrors.push(field);
-            }
-        }
         setError(newErrors);
 
         if (newErrors.length > 0) {
@@ -68,6 +49,17 @@ export function InformacoesExtras() {
                                 color="error"
                                 checked={publicarChecked}
                                 onClick={() => setPublicarChecked(true)}
+                                onChange={(e) => {
+                                    const { target } = e
+                                    updateFormData({
+                                        ...e,
+                                        target: {
+                                            ...target,
+                                            name: "publicar",
+                                            value: "true",
+                                        }
+                                    })
+                                }}
                             />
                         }
                         label="Sim"
@@ -78,6 +70,17 @@ export function InformacoesExtras() {
                                 color="error"
                                 checked={!publicarChecked}
                                 onClick={() => setPublicarChecked(false)}
+                                onChange={(e) => {
+                                    const { target } = e
+                                    updateFormData({
+                                        ...e,
+                                        target: {
+                                            ...target,
+                                            name: "publicar",
+                                            value: "false",
+                                        }
+                                    })
+                                }}
                             />
                         }
                         label="Não"
@@ -90,9 +93,9 @@ export function InformacoesExtras() {
                     fullWidth
                     label="Site"
                     name="site"
-                    value={formValues.site}
+                    value={site}
                     error={error.includes("site")}
-                    onChange={handleChange}
+                    onChange={updateFormData}
                 />
             </Box>
             <Box>
@@ -100,9 +103,9 @@ export function InformacoesExtras() {
                     sx={{ width: "35%", ...mobileStyles  }}
                     fullWidth
                     label="Instituição de Ensino (Estudantes)"
-                    name="instituicaoEnsino"
-                    value={formValues.instituicaoEnsino}
-                    onChange={handleChange}
+                    name="instituicao_ensino"
+                    value={instituicao_ensino}
+                    onChange={updateFormData}
                 />
             </Box>
             <Box>
@@ -110,10 +113,10 @@ export function InformacoesExtras() {
                     sx={{ width: "30%", ...mobileStyles  }}
                     fullWidth
                     label="Número CAU"
-                    name="numeroCau"
-                    value={formValues.numeroCau}
-                    error={error.includes("numeroCau")}
-                    onChange={handleChange}
+                    name="numero_cau"
+                    value={numero_cau}
+                    error={error.includes("numero_cau")}
+                    onChange={updateFormData}
                 />
             </Box>
             <Box>
@@ -121,9 +124,9 @@ export function InformacoesExtras() {
                     sx={{ width: "30%", ...mobileStyles  }}
                     fullWidth
                     label="Ano Estimado de Conclusão"
-                    name="anoConclusao"
-                    value={formValues.anoConclusao}
-                    onChange={handleChange}
+                    name="ano_estimado_conclusao"
+                    value={ano_estimado_conclusao}
+                    onChange={updateFormData}
                 />
             </Box>
             <ActionButtons handleCheckFields={handleAvancar} />
