@@ -28,7 +28,7 @@ const links = [
     { label: "Login", url: "/login" },
 ];
 
-const menuOpenStyles = {
+const menuHoverStyles = {
     "@media (max-width: 600px)": {
         display: "flex",
         width: "100%",
@@ -38,7 +38,7 @@ const menuOpenStyles = {
     }
 }
 
-const closedMenuStyles = {
+const menuStyles = {
     "@media (max-width: 600px)": {
         visibility: "0%",
         display: "none"
@@ -49,7 +49,7 @@ export function Navbar({ isMenuOpen }: { isMenuOpen: boolean }) {
     const { pathname } = useLocation();
     return (
         <StyledNavbar
-            sx={isMenuOpen ? menuOpenStyles : closedMenuStyles}
+            sx={isMenuOpen ? menuHoverStyles : menuStyles}
         >
             {links.map(({ label, url }) => (
                 <NavLink
