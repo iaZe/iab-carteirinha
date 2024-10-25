@@ -20,7 +20,7 @@ export function EnderecoComercial() {
     const [loading, setLoading] = useState(false);
 
 
-    
+
     const handleAvancar = () => {
         const newErrors = [];
 
@@ -42,23 +42,23 @@ export function EnderecoComercial() {
     return (
         <>
             <Box sx={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-                        <TextField
-                            name="endereco_secundario.cep"
-                            error={errors.includes("cep")}
-                            label="CEP*"
-                            sx={mobileStyles}
-                            slotProps={{
-                                input: {
-                                    inputComponent: CepMask as never,
-                                }
-                            }}
-                            value={cep}
-                            onChange={updateFormData}
-                        />
+                <TextField
+                    name="endereco_secundario.cep"
+                    error={errors.includes("cep")}
+                    label="CEP*"
+                    sx={mobileStyles}
+                    slotProps={{
+                        input: {
+                            inputComponent: CepMask as never,
+                        }
+                    }}
+                    value={cep}
+                    onChange={updateFormData}
+                />
                 {
-                    loading 
-                    ? <CircularProgress size={35} color="error" />
-                    : null
+                    loading
+                        ? <CircularProgress size={35} color="error" />
+                        : null
                 }
             </Box>
             <Box>
@@ -72,6 +72,13 @@ export function EnderecoComercial() {
                 />
             </Box>
             <Box sx={{ display: "flex", gap: "2rem", ...mobileStyles }}>
+                <TextField
+                    name="endereco_secundario.numero"
+                    error={errors.includes("numero")}
+                    label="Número*"
+                    value={numero}
+                    onChange={updateFormData}
+                />
                 <TextField
                     sx={{ width: "40%", ...mobileStyles }}
                     name="endereco_secundario.cidade"
@@ -89,13 +96,6 @@ export function EnderecoComercial() {
                 />
             </Box>
             <Box sx={{ display: "flex", gap: "2rem", ...mobileStyles }}>
-                <TextField
-                    name="endereco_secundario.numero"
-                    error={errors.includes("numero")}
-                    label="Número*"
-                    value={numero}
-                    onChange={updateFormData}
-                />
                 <TextField
                     name="endereco_secundario.complemento"
                     label="Complemento"

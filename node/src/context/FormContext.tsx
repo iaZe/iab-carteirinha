@@ -29,7 +29,7 @@ export interface FormObjectProps {
     site: string;
     numero_cau: string;
     instituicao_ensino: string;
-    ano_estimado_conclusao: number;
+    ano_estimado_conclusao: string;
     endereco_primario: Endereco;
     endereco_secundario: Endereco;
 }
@@ -65,7 +65,7 @@ const defaultFormData = {
     site: "",
     numero_cau: "",
     instituicao_ensino: "",
-    ano_estimado_conclusao: 0,
+    ano_estimado_conclusao: "",
     profissao: "Arquiteto",
     endereco_primario: {
         logradouro: "",
