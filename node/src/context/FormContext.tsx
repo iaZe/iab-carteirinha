@@ -30,11 +30,13 @@ export interface FormObjectProps {
     numero_cau: string;
     instituicao_ensino: string;
     ano_estimado_conclusao: string;
+    usuario: string;
+    senha: string;
     endereco_primario: Endereco;
     endereco_secundario: Endereco;
 }
 
-interface FormDataProps extends FormObjectProps {
+export interface FormDataProps extends FormObjectProps {
     password: string;
     confirmPassword: string;
 }
@@ -50,7 +52,7 @@ interface FormProviderValueProps {
 }
 
 const defaultFormData = {
-    nome: "TESTE",
+    nome: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -67,6 +69,8 @@ const defaultFormData = {
     instituicao_ensino: "",
     ano_estimado_conclusao: "",
     profissao: "Arquiteto",
+    usuario: "",
+    senha: "",
     endereco_primario: {
         logradouro: "",
         numero: "",
