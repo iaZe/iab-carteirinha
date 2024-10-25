@@ -8,7 +8,7 @@ const StyledNavbar = styled(Box)({
     paddingBottom: "1rem",
     display: "flex",
     justifyContent: "center",
-    gap: "2.5rem",
+    gap: "1.5rem",
     "@media (max-width: 600px)": {
         transition: "visibility 2s",
         flexDirection: "column",
@@ -20,10 +20,10 @@ const StyledNavbar = styled(Box)({
 
 const links = [
     { label: "Página Inicial", url: "/" },
-    { label: "Institucional", url: "/institucional" },
     // { label: "Eventos", url: "/eventos" },
-    // { label: "Concursos", url: "/concursos" },
+     { label: "Concursos", url: "/concursos" },
     { label: "Convênios", url: "/convenios" },
+    { label: "Institucional", url: "/institucional" },
     // { label: "Notícias", url: "/noticias" },
     { label: "Login", url: "/login" },
 ];
@@ -53,6 +53,7 @@ export function Navbar({ isMenuOpen }: { isMenuOpen: boolean }) {
         >
             {links.map(({ label, url }) => (
                 <NavLink
+                    key={url}
                     to={url}
                     className={`${styles.navbutton} ${pathname === url ? styles.active : ""
                         }`}
