@@ -13,8 +13,8 @@ export function MenuButton({ isMenuOpen, handleToggleMenu }) {
         sx={{
             zIndex: 11,
             position: "fixed",
-            top: "1.75rem",
-            right: "1.5rem",
+            top: "1rem",
+            right: "1.25rem",
             "@media (min-width: 600px)": {
                 display: "none"
             }
