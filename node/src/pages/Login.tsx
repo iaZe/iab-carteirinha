@@ -52,13 +52,29 @@ export function Login() {
     return (
         <StyledBox>
             <StyledPaper>
-                <Title variant="h4">
-                    Apenas alguns cliques para <br /> tornar-se um associado!
-                </Title>
-                <img src={logo} alt="" />
-                <Text variant="body1">
-                    Faça parte e aproveite todos os benefícios que o IAB Sergipe te proporciona!
-                </Text>
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-around",
+                    alignItems: "center",
+                    gap: "1rem",
+                    marginTop: "2rem",
+                    marginBottom: "2rem",
+                    flexGrow: 1,
+                    width: "80%",
+                    "@media (max-width: 600px)": {
+                        width: "100%"
+                    }
+                }}>
+
+                    <Title variant="h4">
+                        Apenas alguns cliques para <br /> tornar-se um associado!
+                    </Title>
+                    <img width="120px" src={logo} alt="" />
+                    <Text variant="body1">
+                        Faça parte e aproveite todos os benefícios que o IAB Sergipe te proporciona!
+                    </Text>
+                </Box>
             </StyledPaper>
             <StyledPaper>
                 <Title variant="h4">
@@ -112,9 +128,9 @@ export function Login() {
                             fontWeight: "medium",
                             fontSize: "large"
                         }}
-                    
+
                     >
-                        Não é associado?
+                        {"Não é associado? "}
                         <Link
                             sx={{
                                 color: "#BF1515",
@@ -126,7 +142,7 @@ export function Login() {
                             component={RouterLink}
                             to={"/cadastro"}
                         >
-                            {" Clique aqui"}
+                            Clique aqui
                         </Link>
                     </Box>
                 </Box>
