@@ -1,19 +1,7 @@
-import { Box, styled, Typography } from "@mui/material";
+import { Box, styled } from "@mui/material";
+import { StyledTitle } from "../components/Styled/StyledTitle";
+import { StyledText } from "../components/Styled/StyledText";
 
-const StyledTitle = styled(Typography)({
-    fontSize: "2rem",
-    color: "#BF1515",
-    marginBottom: "2rem",
-    ":not(:first-child)": {
-        marginTop: "4rem",
-    }
-});
-
-const StyledText = styled(Typography)({
-    fontSize: "1.25rem",
-    color: "#00000080",
-    paddingLeft: "1.5rem",
-});
 
 const MainContainer = styled(Box)({
     marginLeft: "15rem",
