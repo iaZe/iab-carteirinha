@@ -5,14 +5,14 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { ChangeEvent, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { ActionButtons } from "../ActionButtons";
 import { FormContext } from "../../context/FormContext";
 import { CpfMask, TelefoneMask } from "../MaskedInput";
 
 export function DadosPessoais() {
     const { formData, updateFormData, errors, addError } = useContext(FormContext)
-    const { nome, email, cpf, celular, fixo } = formData;
+    const { nome, email, cpf, celular, fixo, usuario, senha } = formData;
 
     const [checkbox, setCheckbox] = useState("Arquiteto")
 
@@ -94,6 +94,23 @@ export function DadosPessoais() {
                     }}
                     onChange={updateFormData}
                 />
+            </Box>
+            <Box sx={{ display: "flex", gap: "2rem", "@media (max-width: 600px)": { flexDirection: "column" } }}>
+                <TextField
+                    name="usuario"
+                    error={errors.includes("usuario")}
+                    label="Usuario*"
+                    value={usuario}
+                    onChange={updateFormData}
+                />
+                <TextField
+                    name="senha"
+                    error={errors.includes("senha")}
+                    label="Senha*"
+                    value={senha}
+                    onChange={updateFormData}
+                />
+                
             </Box>
             <Typography sx={{ fontWeight: "medium" }}>Profissão</Typography>
             <Box>
