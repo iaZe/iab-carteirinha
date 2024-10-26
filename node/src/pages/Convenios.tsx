@@ -2,21 +2,9 @@ import { Box, styled, Typography } from "@mui/material";
 import { Categorias } from "../components/Categorias";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ConveniosImages from "../components/ConveniosImages";
+import { StyledTitle } from "../components/Styled/StyledTitle";
+import { StyledText } from "../components/Styled/StyledText";
 
-const StyledTitle = styled(Typography)({
-  fontSize: "2rem",
-  color: "#BF1515",
-  marginBottom: "2rem",
-  ":not(:first-child)": {
-      marginTop: "4rem",
-  }
-});
-
-const StyledText = styled(Typography)({
-  fontSize: "1.25rem",
-  color: "#00000080",
-  paddingLeft: "1.5rem",
-});
 
 const StyledSubtitle = styled(Typography)({
   fontSize: "1.5rem",
