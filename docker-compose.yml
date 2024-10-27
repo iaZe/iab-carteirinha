@@ -10,11 +10,12 @@ services:
       - "5000:5000"
     environment:
       FLASK_ENV: development
-      MYSQL_HOST: db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: example
-      MYSQL_DB: iabse
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: ltdiabse
+      DB_NAME: iabse
       FLASK_APP: app:create_app
+      SECRET_KEY: ltdiabse
     depends_on:
       - db
     volumes:
