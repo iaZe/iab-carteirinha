@@ -6,6 +6,7 @@ import { Pagamento } from "./pages/Pagamento";
 import { Institucional } from "./pages/Institucional";
 import { Convenios } from "./pages/Convenios";
 import AguardandoConfirmacao from "./pages/AguardandoConfirmacao";
+import { PaginaNaoEncontrada } from "./pages/PaginaNaoEncontrada";
 
 export const routes = [
     {
@@ -39,7 +40,12 @@ export const routes = [
             {
                 path: "perfil",
                 element: <div>Página de Perfil</div>
+            },
+            {
+                path: "*",
+                element: <PaginaNaoEncontrada />
             }
         ]
+
     }
 ]
