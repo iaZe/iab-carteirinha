@@ -5,11 +5,8 @@ import { EnderecoPessoal } from "../components/Cadastro/EnderecoPessoal";
 import { FormContext } from "../context/FormContext";
 import { EnderecoComercial } from "../components/Cadastro/EnderecoComercial";
 import { InformacoesExtras } from "../components/Cadastro/InformacoesExtras";
+import { StyledTitle } from "../components/Styled/StyledTitle";
 
-const StyledTitle = styled(Typography)({
-  fontSize: "2rem",
-  color: "#BF1515",
-});
 
 const StyledSubtitle = styled(Typography)({
   fontSize: "1rem",

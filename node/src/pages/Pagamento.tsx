@@ -3,6 +3,7 @@ import { Box, Paper, styled, Typography, Button } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import { Link } from "react-router-dom";
+import { StyledTitle } from "../components/Styled/StyledTitle";
 
 const StyledPaper = styled(Paper)({
     maxWidth: "900px",
@@ -15,10 +16,6 @@ const StyledPaper = styled(Paper)({
     flexDirection: "column",
 });
 
-const StyledTitle = styled(Typography)({
-    fontSize: "2rem",
-    color: "#BF1515",
-});
 
 const StyledText = styled(Typography)({
     fontSize: "1.25rem",
