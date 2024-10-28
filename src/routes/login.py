@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_refresh_token
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.security import check_password_hash
 
 from database.sessao import db
@@ -27,15 +27,16 @@ def register_routes_login(app, jwt_manager, rate_limiter):
             return jsonify({'message': 'Credenciais inválidas!'}), 401
 
         # Gera o token JWT
-        token = JWTManager(app.config['SECRET_KEY']).generate_jwt(user.id)
+        access_token = JWTManager(app.config['SECRET_KEY']).generate_jwt(user.id)
+        refresh_token = JWTManager(app.config['SECRET_KEY']).generate_refresh_token(user.id)
 
-        return jsonify({'token': token}), 200
+        return jsonify({'access_token': access_token, 'refresh_token': refresh_token}), 200
 
     @app.route('/token/refresh', methods=['POST'])
     @jwt_required(refresh=True)
     def refresh_token():
-        """Rota para a criação de um token de acesso"""
+        """Rota para criar um novo token de acesso usando o refresh token"""
         identity = get_jwt_identity()
-        access_token = create_refresh_token(identity=identity, expires_delta=timedelta(days=30))
+        new_access_token = JWTManager.generate_jwt(identity)
 
-        return jsonify({'refresh': access_token}), 200
+        return jsonify({'access_token': new_access_token}), 200
