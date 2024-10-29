@@ -14,7 +14,7 @@ class Arquiteto(db.Model):
     data_filiacao = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     data_fim_filiacao = db.Column(db.DateTime)
     endereco_id = db.Column(db.Integer, db.ForeignKey('enderecos.id'))
-    endereco = db.relationship('Endereco', backref=db.backref('arquitetos', lazy=True))
+    endereco = db.relationship('Endereco', backref=db.backref('arquitetos_endereco', lazy=True))
     email = db.Column(db.String(255), nullable=False)
     hash = db.Column(db.String(255))
     foto = db.Column(db.String(255))
