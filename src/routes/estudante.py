@@ -6,13 +6,14 @@ from database.sessao import db
 from domain.endereco import EnderecoDomain
 from model.estudante import Estudante
 
+from settings.token_auth import TokenAuthenticator
+
 #TODO: Alterar rotas para português ou inglês
-def registrar_rota_estudante(app):
-    """Architect routes register"""
+def registrar_rota_estudante(app, token_authenticator):
 
     @app.route('/estudante', methods=['POST'])
-    def cadastrar_estudante():
-        """Create a new architect."""
+    @token_authenticator.token_required
+    def cadastrar_estudante(user_id=None):
         data = request.get_json()
         endereco_domain = EnderecoDomain(data.get('endereco'))
         endereco = endereco_domain.save_endereco()

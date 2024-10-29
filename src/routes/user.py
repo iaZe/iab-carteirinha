@@ -5,10 +5,9 @@ from database.sessao import db
 from model.login import Login
 
 
-def register_routes_user(app, token_authenticator):
+def register_routes_user(app):
     """User routes register"""
     @app.route('/user', methods=['POST'])
-    @token_authenticator.token_required
     def create_login():
         """Creates a new user"""
         data = request.get_json()
@@ -21,7 +20,7 @@ def register_routes_user(app, token_authenticator):
             return jsonify({'message': 'Usuário já existe!'}), 400
 
         # Criptografa a senha
-        hashed_password = generate_password_hash(data['senha'], method='sha256')
+        hashed_password = generate_password_hash(data['senha'], method='pbkdf2:sha256')
 
         # Cria o usuário no banco de dados
         novo_login = Login(email=data['email'], senha=hashed_password)

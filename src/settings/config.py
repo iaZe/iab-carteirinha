@@ -1,10 +1,10 @@
 import os
-
+import redis
 
 class Config:
     DB_USER = os.environ.get('DB_USER')
     DB_PASSWORD = os.environ.get('DB_PASSWORD')
-    DB_HOST = os.environ.get('DB_HOST', 'localhost')
+    DB_HOST = os.environ.get('DB_HOST')
     DB_NAME = os.environ.get('DB_NAME')
 
     if not all([DB_USER, DB_PASSWORD, DB_NAME]):
@@ -15,3 +15,8 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.environ.get('SECRET_KEY')
+
+    redis_host = os.getenv("REDIS_HOST", "redis")
+    redis_port = int(os.getenv("REDIS_PORT", 6379))
+
+    redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)

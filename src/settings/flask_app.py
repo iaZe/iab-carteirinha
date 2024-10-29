@@ -2,6 +2,7 @@ from flask import Flask
 
 from database.sessao import db
 from routes.administrator import register_routes_admin
+from routes.estudante import registrar_rota_estudante
 from routes.architect import register_routes_architect
 from routes.login import register_routes_login
 from routes.user import register_routes_user
@@ -30,7 +31,7 @@ def create_app():
     register_routes_login(app, jwt_manager, rate_limiter)
     register_routes_admin(app, token_authenticator)
     register_routes_architect(app, token_authenticator)
-    register_routes_user(app, token_authenticator)
+    register_routes_user(app)
     registrar_rota_estudante(app, token_authenticator)
 
     return app
