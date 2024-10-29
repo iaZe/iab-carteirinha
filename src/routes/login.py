@@ -6,7 +6,6 @@ from database.sessao import db
 from model.login import Login
 from settings.jwt_manager import JWTManager
 from settings.limiter import RateLimiter
-from datetime import timedelta
 
 
 def register_routes_login(app, jwt_manager, rate_limiter):
