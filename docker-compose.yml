@@ -12,15 +12,20 @@ services:
       FLASK_ENV: development
       DB_HOST: db
       DB_USER: root
-      DB_PASSWORD: ltdiabse
+      DB_PASSWORD: ltd_iabse
       DB_NAME: iabse
       FLASK_APP: app:create_app
       SECRET_KEY: ltdiabse
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - db
+      - redis
     volumes:
       - ./src:/app/src
     command: flask run --host=0.0.0.0
+    networks:
+      - flask_network
 
   db:
     image: mysql:8.0
@@ -33,6 +38,20 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./init_db:/docker-entrypoint-initdb.d
+    networks:
+      - flask_network
+
+  redis:
+    image: redis:alpine
+    container_name: flask_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - flask_network
 
 volumes:
   mysql_data:
+
+networks:
+  flask_network:
+    driver: bridge
