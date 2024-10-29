@@ -1,112 +1,50 @@
-# Flask-Database
+# React + TypeScript + Vite
 
-## Descrição
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Este é um projeto básico de gerenciamento de banco de dados usando Flask, 
-estruturado de forma modular para fácil manutenção e escalabilidade. 
+Currently, two official plugins are available:
 
-## Pré-requisitos
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-Python 3.10
+## Expanding the ESLint configuration
 
-Virtualenv
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-Flask
+- Configure the top-level `parserOptions` property like this:
 
-## Configuração do Ambiente
+```js
+export default tseslint.config({
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
+```
 
-Siga os passos abaixo para configurar o ambiente e executar o projeto localmente.
+- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
+- Optionally add `...tseslint.configs.stylisticTypeChecked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
 
-### 1. Clonar o Repositório
+```js
+// eslint.config.js
+import react from 'eslint-plugin-react'
 
-````
-git clone https://github.com/user/repositorio.git
-cd repositorio
-````
-### 2. Criar e Ativar um Ambiente Virtual
-
-Crie o ambiente virtual para isolar as dependências do projeto.
-
-````
-# Criar o ambiente virtual
-python -m venv .venv
-
-# Ativar o ambiente virtual (Linux/MacOS)
-source .venv/bin/activate
-
-# Ativar o ambiente virtual (Windows)
-.venv\Scripts\activate
-````
-
-### 3. Instalar Dependências
-
-Com o ambiente virtual ativado, instale as dependências listadas no arquivo requirements.txt.
-
-````
-pip install -r requirements.txt
-````
-
-### 4. Configurar Variáveis de Ambiente
-
-Certifique-se de configurar suas variáveis de ambiente (por exemplo, detalhes de conexão com o banco de dados) no arquivo .env. Um exemplo básico de como deve ser o arquivo .env para usar SQLite:
-
-````
-FLASK_APP=settings.flask_app
-FLASK_ENV=development
-DATABASE_URL=sqlite:///seu_banco_de_dados.db
-````
-
-Por padrão, o SQLite cria um arquivo de banco de dados local. Se o arquivo seu_banco_de_dados.db não existir, ele será criado automaticamente na raiz do projeto.
-
-### 5. Inicializar o Banco de Dados
-
-Execute os comandos de migração do banco de dados, se aplicável, para configurar o SQLite.
-
-````
-flask db upgrade
-````
-
-Caso você não utilize migrações automáticas, poderá criar o banco de dados manualmente, garantindo que ele esteja pronto para uso.
-
-### 6. Executar a Aplicação
-
-Para iniciar o servidor Flask, execute o comando abaixo:
-
-````
-flask run
-````
-
-A aplicação estará disponível em http://127.0.0.1:5000/.
-
-
-## Estrutura do Projeto
-
-* database/: Configurações do banco de dados e sessão.
-
-* model/: Modelos de dados, definindo a estrutura das entidades do banco.
-
-* routes/: Definição das rotas (endpoints) da aplicação.
-
-* settings/: Configurações do Flask e da aplicação.
-
-* main.py: Ponto de entrada da aplicação.
-
-## Testes
-
-Para rodar os testes (se houverem), utilize o comando:
-
-````
-pytest
-````
-
-## Contribuições
-
-1. Faça um fork do projeto.
-2. Crie uma branch para sua feature (git checkout -b feature/nome-da-feature).
-3. Faça commit de suas alterações (git commit -m 'Adiciona nova feature').
-4. Envie para a branch original (git push origin feature/nome-da-feature).
-5. Crie um Pull Request.
-
-## Licença
-
-Este projeto está licenciado sob a licença MIT. Consulte o arquivo LICENSE para mais detalhes.
+export default tseslint.config({
+  // Set the react version
+  settings: { react: { version: '18.3' } },
+  plugins: {
+    // Add the react plugin
+    react,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended rules
+    ...react.configs.recommended.rules,
+    ...react.configs['jsx-runtime'].rules,
+  },
+})
+```
