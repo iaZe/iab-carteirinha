@@ -42,3 +42,20 @@ CREATE TABLE IF NOT EXISTS administradores (
     email VARCHAR(255) UNIQUE NOT NULL,
     FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
 );
+
+CREATE TABLE estudantes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    cpf VARCHAR(11) NOT NULL UNIQUE,
+    celular VARCHAR(15),
+    fixo VARCHAR(15),
+    data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    endereco_id INT,
+    email VARCHAR(255) NOT NULL,
+    hash VARCHAR(255),
+    foto VARCHAR(255),
+    instituicao_ensino VARCHAR(255),
+    matricula_faculdade VARCHAR(50) NOT NULL,
+    ano_estimado_conclusao INT,
+    FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
+);
