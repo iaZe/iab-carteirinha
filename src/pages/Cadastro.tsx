@@ -6,6 +6,7 @@ import { FormContext } from "../context/FormContext";
 import { EnderecoComercial } from "../components/Cadastro/EnderecoComercial";
 import { InformacoesExtras } from "../components/Cadastro/InformacoesExtras";
 import { StyledTitle } from "../components/Styled/StyledTitle";
+import { LoadingOverlay } from "../components/LoadingOverlay";
 
 
 const StyledSubtitle = styled(Typography)({
@@ -51,7 +52,7 @@ const steps = [
 ];
 
 export function Cadastro() {
-  const { currentPage } = useContext(FormContext);
+  const { currentPage, isLoading } = useContext(FormContext);
   const [checked, setChecked] = useState(true);
   const lastPageRef = useRef(currentPage); // Usando useRef para lastPage
   const [direction, setDirection] = useState<"left" | "right">("left");
@@ -88,6 +89,8 @@ export function Cadastro() {
     if (isLogged) return <></>;
     */
   }
+
+  if (isLoading) return <LoadingOverlay />
 
   return (
     <Slide
