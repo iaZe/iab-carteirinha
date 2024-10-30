@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api } from "./api.ts";
 
 export const login = async (username:string, password: string) => {
     try {
@@ -9,3 +9,4 @@ export const login = async (username:string, password: string) => {
         console.log(error);
     }
 }
+
