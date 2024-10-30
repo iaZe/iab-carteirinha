@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS administradores (
     FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
 );
 
-CREATE TABLE estudantes (
+CREATE TABLE IF NOT EXISTS estudantes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     cpf VARCHAR(11) NOT NULL UNIQUE,
