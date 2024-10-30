@@ -19,7 +19,6 @@ def register_routes_admin(app, token_authenticator):
         novo_administrador = Administrador(
             nome=data['nome'],
             cpf=data['cpf'],
-            uf_documento=data['uf_documento'],
             cargo=data['cargo'],
             endereco_id=endereco.id,
             email=data['email']

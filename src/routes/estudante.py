@@ -21,7 +21,8 @@ def registrar_rota_estudante(app, token_authenticator):
             cpf=data['cpf'],
             celular=data['celular'],
             fixo=data['fixo'],
-            data_cadastro=datetime.strptime(data['data_cadastro'], '%Y-%m-%d'),
+            data_cadastro=datetime.now(),
+            fl_ativo=1,
             endereco_id=endereco.id,
             email=data['email'],
             hash=data['hash'],
@@ -32,40 +33,7 @@ def registrar_rota_estudante(app, token_authenticator):
         )
         db.session.add(novo_estudante)
         db.session.commit()
-        return jsonify({"message": "Estudante cadastrado com sucesso!"}), 201
-
-    @app.route('/estudante/listar', methods=['GET'])
-    @token_authenticator.token_required
-    def listar_estudantes(user_id=None):
-        estudantes = Estudante.query.all()
-        resultados = []
-        for estudante in estudantes:
-            endereco = estudante.endereco
-            result = {
-                "id": estudante.id,
-                "nome": estudante.nome,
-                "cpf": estudante.cpf,
-                "celular": estudante.celular,
-                "fixo": estudante.fixo,
-                "data_cadastro": estudante.data_cadastro,
-                "endereco": {
-                    "cep": endereco.cep,
-                    "logradouro": endereco.logradouro,
-                    "complemento": endereco.complemento,
-                    "numero": endereco.numero,
-                    "bairro": endereco.bairro,
-                    "cidade": endereco.cidade,
-                    "estado": endereco.estado
-                },
-                "email": estudante.email,
-                "hash": estudante.hash,
-                "foto": estudante.foto,
-                "instituicao_ensino": estudante.instituicao_ensino,
-                "matricula_faculdade": estudante.matricula_faculdade,
-                "ano_estimado_conclusao": estudante.ano_estimado_conclusao
-            }
-            resultados.append(result)
-        return jsonify(resultados), 200
+        return jsonify({'message': 'Estudante cadastrado com sucesso!'}), 201
 
     @app.route('/estudante/buscar', methods=['GET'])
     @token_authenticator.token_required
@@ -75,42 +43,42 @@ def registrar_rota_estudante(app, token_authenticator):
         instituicao_ensino = request.args.get('instituicao_ensino')
         email = request.args.get('email')
 
-        query = Estudante.query
+        query = Estudante.query.filter_by(fl_ativo=1)
         if nome:
-            query = query.filter(Estudante.nome.ilike(f"%{nome}%"))
+            query = query.filter(Estudante.nome.ilike(f'%{nome}%'))
         if cpf:
             query = query.filter_by(cpf=cpf)
         if instituicao_ensino:
-            query = query.filter(Estudante.instituicao_ensino.ilike(f"%{instituicao_ensino}%"))
+            query = query.filter(Estudante.instituicao_ensino.ilike(f'%{instituicao_ensino}%'))
         if email:
-            query = query.filter(Estudante.email.ilike(f"%{email}%"))
+            query = query.filter(Estudante.email.ilike(f'%{email}%'))
 
         estudantes = query.all()
         resultados = []
         for estudante in estudantes:
             endereco = estudante.endereco
             result = {
-                "id": estudante.id,
-                "nome": estudante.nome,
-                "cpf": estudante.cpf,
-                "celular": estudante.celular,
-                "fixo": estudante.fixo,
-                "data_cadastro": estudante.data_cadastro,
-                "endereco": {
-                    "cep": endereco.cep,
-                    "logradouro": endereco.logradouro,
-                    "complemento": endereco.complemento,
-                    "numero": endereco.numero,
-                    "bairro": endereco.bairro,
-                    "cidade": endereco.cidade,
-                    "estado": endereco.estado
+                'id': estudante.id,
+                'nome': estudante.nome,
+                'cpf': estudante.cpf,
+                'celular': estudante.celular,
+                'fixo': estudante.fixo,
+                'data_cadastro': estudante.data_cadastro,
+                'endereco': {
+                    'cep': endereco.cep,
+                    'logradouro': endereco.logradouro,
+                    'complemento': endereco.complemento,
+                    'numero': endereco.numero,
+                    'bairro': endereco.bairro,
+                    'cidade': endereco.cidade,
+                    'estado': endereco.estado
                 },
-                "email": estudante.email,
-                "hash": estudante.hash,
-                "foto": estudante.foto,
-                "instituicao_ensino": estudante.instituicao_ensino,
-                "matricula_faculdade": estudante.matricula_faculdade,
-                "ano_estimado_conclusao": estudante.ano_estimado_conclusao
+                'email': estudante.email,
+                'hash': estudante.hash, #TODO: Verificar se vai listar o hash e se pode atualizar
+                'foto': estudante.foto,
+                'instituicao_ensino': estudante.instituicao_ensino,
+                'matricula_faculdade': estudante.matricula_faculdade,
+                'ano_estimado_conclusao': estudante.ano_estimado_conclusao
             }
             resultados.append(result)
         return jsonify(resultados), 200
@@ -123,21 +91,12 @@ def registrar_rota_estudante(app, token_authenticator):
         estudante = Estudante.query.get(id)
 
         if not estudante:
-            return jsonify({"message": "Estudante não encontrado."}), 404
+            return jsonify({'message': 'Estudante não encontrado.'}), 404
 
         estudante.nome = data.get('nome', estudante.nome)
-        estudante.cpf = data.get('cpf', estudante.cpf)
         estudante.celular = data.get('celular', estudante.celular)
         estudante.fixo = data.get('fixo', estudante.fixo)
-
-        if 'data_cadastro' in data:
-            try:
-                estudante.data_cadastro = datetime.strptime(data['data_cadastro'], '%Y-%m-%d')
-            except ValueError:
-                return jsonify({"message": "Data de cadastro em formato inválido. Use o formato AAAA-MM-DD."}), 400
-
         estudante.email = data.get('email', estudante.email)
-        estudante.hash = data.get('hash', estudante.hash)
         estudante.foto = data.get('foto', estudante.foto)
         estudante.instituicao_ensino = data.get('instituicao_ensino', estudante.instituicao_ensino)
         estudante.matricula_faculdade = data.get('matricula_faculdade', estudante.matricula_faculdade)
@@ -155,17 +114,17 @@ def registrar_rota_estudante(app, token_authenticator):
 
         db.session.commit()
 
-        return jsonify({"message": "Estudante atualizado com sucesso!"}), 200
+        return jsonify({'message': 'Estudante atualizado com sucesso!'}), 200
 
-    @app.route('/estudante/excluir/<int:id>', methods=['DELETE'])
+    @app.route('/estudante/excluir/<int:id>', methods=['PUT'])
     @token_authenticator.token_required
     def deletar_estudante(id, user_id=None):
         estudante = Estudante.query.get(id)
 
         if not estudante:
-            return jsonify({"message": "Estudante não encontrado."}), 404
+            return jsonify({'message': 'Estudante não encontrado.'}), 404
 
-        db.session.delete(estudante)
+        estudante.fl_ativo = 0
         db.session.commit()
 
-        return jsonify({"message": "Estudante deletado com sucesso!"}), 200
+        return jsonify({'message': 'Estudante inativado com sucesso!'}), 200
