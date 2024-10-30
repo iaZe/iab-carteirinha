@@ -14,7 +14,7 @@ def register_routes_architect(app, token_authenticator):
 
     @app.route('/arquiteto/cadastrar', methods=['POST'])
     @token_authenticator.token_required
-    def cadastrar_arquiteto():
+    def cadastrar_arquiteto(user_id=None):
         """Create a new architect."""
         data = request.get_json()
         endereco_domain = EnderecoDomain(data.get('endereco'))
@@ -28,7 +28,10 @@ def register_routes_architect(app, token_authenticator):
             endereco_id=endereco.id,
             email=data['email'],
             hash=data['hash'],
-            foto=data.get('foto', None)
+            foto=data['foto'],
+            site=data['site'],
+            numero_cau=data['numero_cau'],
+            fl_ativo=1
         )
         db.session.add(novo_arquiteto)
         db.session.commit()
@@ -78,6 +81,9 @@ def register_routes_architect(app, token_authenticator):
                 'email': arquiteto.email,
                 'hash': arquiteto.hash,
                 'foto': arquiteto.foto,
+                'site': arquiteto.site,
+                'numero_cau': arquiteto.numero_cau,
+                'fl_ativo': arquiteto.fl_ativo
             }
             resultados.append(result)
         return jsonify(resultados), 200
@@ -99,6 +105,8 @@ def register_routes_architect(app, token_authenticator):
         arquiteto.fixo = data.get('fixo', arquiteto.fixo)
         arquiteto.email = data.get('email', arquiteto.email)
         arquiteto.foto = data.get('foto', arquiteto.foto)
+        arquiteto.site = data.get('site', arquiteto.site)
+        arquiteto.numero_cau = data.get('numero_cau', arquiteto.numero_cau)
 
         if arquiteto.endereco:
             endereco = arquiteto.endereco
