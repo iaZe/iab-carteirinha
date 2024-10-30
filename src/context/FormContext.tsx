@@ -1,4 +1,5 @@
 import { ChangeEvent, createContext, ReactNode, useState } from "react";
+import { cadastrar } from "../services/cadastro";
 import { defaultFormData, FormDataProps } from "../types/formdata";
 
 interface FormProviderProps {
@@ -10,6 +11,8 @@ interface FormProviderValueProps {
     currentPage: number;
     goToPreviousPage: () => void;
     goToNextPage: () => void;
+    isLoading: boolean;
+    sendFormData: () => void;
     updateFormData: (e: ChangeEvent<HTMLInputElement>) => void;
     errors: string[];
     addError: (newErrors: string[]) => void;
@@ -17,6 +20,8 @@ interface FormProviderValueProps {
 
 export const FormContext = createContext<FormProviderValueProps>({
     formData: defaultFormData,
+    isLoading: false,
+    sendFormData: () => {},
     updateFormData: () => { },
     currentPage: 0,
     goToPreviousPage: () => { },
@@ -29,6 +34,8 @@ export const FormProvider = ({ children }: FormProviderProps) => {
     const [currentPage, setCurrentPage] = useState(0);
 
     const [formData, setFormData] = useState(defaultFormData);
+
+    const [isLoading, setIsLoading] = useState(false)
 
     const [errors, setErrors] = useState<string[]>([]);
 
@@ -43,6 +50,10 @@ export const FormProvider = ({ children }: FormProviderProps) => {
             setErrors([])
             setCurrentPage(currentPage - 1);
         }
+    };
+
+    const addError = (newErrors: string[]) => {
+        setErrors((prevState) => [...prevState, ...newErrors]);
     };
 
     const updateFormData = (
@@ -68,9 +79,16 @@ export const FormProvider = ({ children }: FormProviderProps) => {
         }
     };
 
-    const addError = (newErrors: string[]) => {
-        setErrors((prevState) => [...prevState, ...newErrors]);
-    };
+    const sendFormData = async () => {
+        setIsLoading(true);
+        try {
+            await cadastrar(formData); // Agora o await funcionará corretamente
+        } catch (error) {
+            console.error("Erro ao cadastrar:", error);
+        } finally {
+            setIsLoading(false); // Define loading como false após a chamada
+        }
+    }
 
     return (
         <FormContext.Provider
@@ -82,6 +100,8 @@ export const FormProvider = ({ children }: FormProviderProps) => {
                 goToNextPage,
                 errors,
                 addError,
+                sendFormData,
+                isLoading
             }}
         >
             {children}

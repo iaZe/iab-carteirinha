@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Box, Checkbox, FormControlLabel, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { ActionButtons } from "../ActionButtons";
@@ -13,16 +13,18 @@ const mobileStyles = {
 }
 
 export function InformacoesExtras() {
-    const { formData, updateFormData } = useContext(FormContext)
+    const { formData, updateFormData, sendFormData } = useContext(FormContext)
     const { site, instituicao_ensino, numero_cau, ano_estimado_conclusao } = formData;
 
     const [publicarChecked, setPublicarChecked] = useState(true);
     const [error, setError] = useState<string[]>([]);
+    
 
+    
     const handleAvancar = () => {
         const newErrors = [];
         if (publicarChecked) {
-            if (!(site.includes('http://'))) {
+            if (!(site.includes('http://') || !(site.includes('https://')))) {
                 newErrors.push("site")
             }
             if (instituicao_ensino.trim().length < 2) {
@@ -31,17 +33,20 @@ export function InformacoesExtras() {
             if (numero_cau.trim().length < 2) {
                 newErrors.push("numero_cau")
             }
-            if (ano_estimado_conclusao < 1900 || ano_estimado_conclusao > new Date().getFullYear()) {
+            if (Number(ano_estimado_conclusao) < new Date().getFullYear()) {
                 newErrors.push("ano_estimado_conclusao")
             }
             setError(newErrors);
         }
 
         if (newErrors.length > 0) {
+            console.log(error)
             return false;
         }
+        sendFormData();
         return true;
     };
+
 
     return (
         <>

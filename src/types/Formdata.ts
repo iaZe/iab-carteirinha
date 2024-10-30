@@ -14,7 +14,7 @@ export interface FormObjectProps {
     nome: string;
     cpf: string;
     uf_documento: string;
-    matricula: string;
+    matricula_faculdade: string;
     celular: string;
     fixo: string;
     data_filiacao: string;
@@ -45,7 +45,7 @@ export const defaultFormData = {
     confirmPassword: "",
     cpf: "",
     uf_documento: "",
-    matricula: "",
+    matricula_faculdade: "",
     celular: "",
     fixo: "",
     data_filiacao: "",
