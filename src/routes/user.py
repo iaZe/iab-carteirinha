@@ -5,10 +5,9 @@ from database.sessao import db
 from model.login import Login
 
 
-def register_routes_user(app, token_authenticator):
+def register_routes_user(app):
     """User routes register"""
     @app.route('/user', methods=['POST'])
-    @token_authenticator.token_required
     def create_login():
         """Creates a new user"""
         data = request.get_json()

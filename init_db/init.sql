@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS arquitetos (
     email VARCHAR(255) NOT NULL,
     hash VARCHAR(255),
     foto VARCHAR(255),
+    numero_cau INT,
+    site VARCHAR(255),
     fl_ativo VARCHAR(1),
     FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
 );
