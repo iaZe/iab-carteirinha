@@ -118,7 +118,7 @@ def registrar_rota_estudante(app, token_authenticator):
 
     @app.route('/estudante/excluir/<int:id>', methods=['PUT'])
     @token_authenticator.token_required
-    def deletar_estudante(id, user_id=None):
+    def excluir_estudante(id, user_id=None):
         estudante = Estudante.query.get(id)
 
         if not estudante:

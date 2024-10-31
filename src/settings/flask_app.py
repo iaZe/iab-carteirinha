@@ -1,15 +1,13 @@
+from dotenv import load_dotenv
 from flask import Flask
 
 from database.sessao import db
-from routes.administrator import register_routes_admin
-from routes.estudante import registrar_rota_estudante
+from routes.administrator import registrar_rota_administrador
 from routes.architect import register_routes_architect
+from routes.estudante import registrar_rota_estudante
 from routes.login import register_routes_login
 from routes.user import register_routes_user
 from settings.config import Config
-
-from dotenv import load_dotenv
-
 from settings.jwt_manager import JWTManager
 from settings.limiter import RateLimiter
 from settings.token_auth import TokenAuthenticator
@@ -29,7 +27,7 @@ def create_app():
 
     # Registro de rotas
     register_routes_login(app, jwt_manager, rate_limiter)
-    register_routes_admin(app, token_authenticator)
+    registrar_rota_administrador(app, token_authenticator)
     register_routes_architect(app, token_authenticator)
     register_routes_user(app)
     registrar_rota_estudante(app, token_authenticator)
