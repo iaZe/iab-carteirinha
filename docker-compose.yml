@@ -16,8 +16,9 @@ services:
       DB_NAME: iabse
       FLASK_APP: app:create_app
       SECRET_KEY: ltdiabse
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+      REDIS_HOST: redis-14542.c265.us-east-1-2.ec2.redns.redis-cloud.com
+      REDIS_PORT: 14542
+      REDIS_PASSWORD: xnniFaO1zl2ytYGhovw9jllmZHsOsQjF
     depends_on:
       - db
       - redis
