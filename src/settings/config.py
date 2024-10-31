@@ -16,8 +16,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
-    redis_host = os.environ.get('REDIS_HOST')
-    redis_port = int(os.environ.get('REDIS_PORT'))
-    redis_password = os.environ.get('REDIS_PASSWORD')
-
-    redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
+    redis_client = redis.Redis(
+        host=os.getenv("REDIS_HOST"),
+        port=int(os.getenv("REDIS_PORT")),
+        password=os.getenv("REDIS_PASSWORD"),
+        decode_responses=True
+    )
