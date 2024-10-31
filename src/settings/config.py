@@ -20,4 +20,4 @@ class Config:
     redis_port = int(os.environ.get('REDIS_PORT'))
     redis_password = os.environ.get('REDIS_PASSWORD')
 
-    redis_client = (redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
+    redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
