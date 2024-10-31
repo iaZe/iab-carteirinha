@@ -38,7 +38,6 @@ CREATE TABLE IF NOT EXISTS administradores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     cpf VARCHAR(11) UNIQUE NOT NULL,
-    cargo VARCHAR(100) NOT NULL,
     endereco_id INT,
     email VARCHAR(255) UNIQUE NOT NULL,
     fl_ativo VARCHAR(1),
