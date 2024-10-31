@@ -19,4 +19,7 @@ class Config:
     redis_host = os.getenv("REDIS_HOST", "redis")
     redis_port = int(os.getenv("REDIS_PORT", 6379))
 
-    redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
+    redis_client = redis.Redis(host='redis-14542.c265.us-east-1-2.ec2.redns.redis-cloud.com',
+                               port=14542,
+                               password='xnniFaO1zl2ytYGhovw9jllmZHsOsQjF',
+                               decode_responses=True)
