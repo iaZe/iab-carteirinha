@@ -2,11 +2,11 @@ from dotenv import load_dotenv
 from flask import Flask
 
 from database.sessao import db
-from routes.administrator import registrar_rota_administrador
-from routes.architect import register_routes_architect
-from routes.estudante import registrar_rota_estudante
-from routes.login import register_routes_login
-from routes.user import register_routes_user
+from routes.administrador import registro_rota_administrador
+from routes.arquiteto import registro_rota_arquiteto
+from routes.estudante import registro_rota_estudante
+from routes.login import registro_rota_login
+from routes.usuario import registro_rota_usuario
 from settings.config import Config
 from settings.jwt_manager import JWTManager
 from settings.limiter import RateLimiter
@@ -26,10 +26,10 @@ def create_app():
     token_authenticator = TokenAuthenticator(secret_key=app.config['SECRET_KEY'])
 
     # Registro de rotas
-    register_routes_login(app, jwt_manager, rate_limiter)
-    registrar_rota_administrador(app, token_authenticator)
-    register_routes_architect(app, token_authenticator)
-    register_routes_user(app)
-    registrar_rota_estudante(app, token_authenticator)
+    registro_rota_login(app, jwt_manager, rate_limiter)
+    registro_rota_administrador(app, token_authenticator)
+    registro_rota_arquiteto(app, token_authenticator)
+    registro_rota_usuario(app)
+    registro_rota_estudante(app, token_authenticator)
 
     return app

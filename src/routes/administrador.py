@@ -8,11 +8,16 @@ from model.administrador import Administrador
 from model.endereco import Endereco
 
 
-def registrar_rota_administrador(app, token_authenticator):
+def registro_rota_administrador(app, token_authenticator):
     @app.route('/administrador/cadastrar', methods=['POST'])
     @token_authenticator.token_required
     def cadastrar_administrador(user_id=None):
         data = request.get_json()
+
+        cpf_existente = Administrador.query.filter_by(cpf=data['cpf']).first()
+        if cpf_existente:
+            return jsonify({'message': 'CPF já cadastrado.'}), 400
+
         endereco_domain = EnderecoDomain(data.get('endereco'))
         endereco = endereco_domain.save_endereco()
 
@@ -36,7 +41,7 @@ def registrar_rota_administrador(app, token_authenticator):
         email = request.args.get('email')
         fl_ativo = request.args.get('fl_ativo')
 
-        query = Administrador.query.all()
+        query = Administrador.query
 
         if nome:
             query = query.filter(Administrador.nome.ilike(f'%{nome}%'))
@@ -47,7 +52,7 @@ def registrar_rota_administrador(app, token_authenticator):
         if fl_ativo:
             query = query.filter_by(fl_ativo=fl_ativo)
 
-        administradores = query
+        administradores = query.all()
 
         resultados = []
         for adminstrador in administradores:
@@ -82,7 +87,6 @@ def registrar_rota_administrador(app, token_authenticator):
             return jsonify({'message': 'Administrador não encontradoo.'}), 404
 
         administrador.nome = data.get('nome', administrador.nome)
-        administrador.cpf = data.get('cpf', administrador.cpf)
         administrador.email = data.get('email', administrador.email)
 
         if administrador.endereco:

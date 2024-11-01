@@ -5,10 +5,10 @@ from database.sessao import db
 from model.login import Login
 
 
-def register_routes_user(app):
+def registro_rota_usuario(app):
     """User routes register"""
-    @app.route('/user', methods=['POST'])
-    def create_login():
+    @app.route('/usuario/cadastrar', methods=['POST'])
+    def criar_login():
         """Creates a new user"""
         data = request.get_json()
 
