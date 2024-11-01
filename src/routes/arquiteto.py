@@ -9,14 +9,17 @@ from model.arquiteto import Arquiteto
 from model.endereco import Endereco
 
 
-def register_routes_architect(app, token_authenticator):
-    """Architect routes register"""
+def registro_rota_arquiteto(app, token_authenticator):
 
     @app.route('/arquiteto/cadastrar', methods=['POST'])
     @token_authenticator.token_required
     def cadastrar_arquiteto(user_id=None):
-        """Create a new architect."""
         data = request.get_json()
+
+        cpf_existente = Arquiteto.query.filter_by(cpf=data['cpf']).first()
+        if cpf_existente:
+            return jsonify({'message': 'CPF já cadastrado.'}), 400
+
         endereco_domain = EnderecoDomain(data.get('endereco'))
         endereco = endereco_domain.save_endereco()
         novo_arquiteto = Arquiteto(
@@ -44,8 +47,9 @@ def register_routes_architect(app, token_authenticator):
         cpf = request.args.get('cpf')
         matricula = request.args.get('matricula')
         email = request.args.get('email')
+        fl_ativo = request.args.get('fl_ativo')
 
-        query = Arquiteto.query.filter_by(fl_ativo=1)
+        query = Arquiteto.query
 
         if nome:
             query = query.filter(Arquiteto.nome.ilike(f'%{nome}%'))
@@ -55,6 +59,8 @@ def register_routes_architect(app, token_authenticator):
             query = query.filter_by(matricula=matricula)
         if email:
             query = query.filter(Estudante.email.ilike(f'%{email}%'))
+        if fl_ativo:
+            query = query.filter_by(fl_ativo=fl_ativo)
 
         arquitetos = query.all()
         resultados = []

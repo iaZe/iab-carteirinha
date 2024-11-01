@@ -9,11 +9,16 @@ from model.estudante import Estudante
 from settings.token_auth import TokenAuthenticator
 
 
-def registrar_rota_estudante(app, token_authenticator):
+def registro_rota_estudante(app, token_authenticator):
     @app.route('/estudante/cadastrar', methods=['POST'])
     @token_authenticator.token_required
     def cadastrar_estudante(user_id=None):
         data = request.get_json()
+
+        cpf_existente = Estudante.query.filter_by(cpf=data['cpf']).first()
+        if cpf_existente:
+            return jsonify({'message': 'CPF já cadastrado.'}), 400
+
         endereco_domain = EnderecoDomain(data.get('endereco'))
         endereco = endereco_domain.save_endereco()
         novo_estudante = Estudante(
@@ -42,8 +47,9 @@ def registrar_rota_estudante(app, token_authenticator):
         cpf = request.args.get('cpf')
         instituicao_ensino = request.args.get('instituicao_ensino')
         email = request.args.get('email')
+        fl_ativo = request.args.get('fl_ativo')
 
-        query = Estudante.query.filter_by(fl_ativo=1)
+        query = Estudante.query
         if nome:
             query = query.filter(Estudante.nome.ilike(f'%{nome}%'))
         if cpf:
@@ -52,6 +58,8 @@ def registrar_rota_estudante(app, token_authenticator):
             query = query.filter(Estudante.instituicao_ensino.ilike(f'%{instituicao_ensino}%'))
         if email:
             query = query.filter(Estudante.email.ilike(f'%{email}%'))
+        if fl_ativo:
+            query = query.filter_by(fl_ativo=fl_ativo)
 
         estudantes = query.all()
         resultados = []
@@ -73,6 +81,7 @@ def registrar_rota_estudante(app, token_authenticator):
                     'cidade': endereco.cidade,
                     'estado': endereco.estado
                 },
+                'fl_ativo': estudante.fl_ativo,
                 'email': estudante.email,
                 'hash': estudante.hash, #TODO: Verificar se vai listar o hash e se pode atualizar
                 'foto': estudante.foto,
