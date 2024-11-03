@@ -33,7 +33,7 @@ docker-compose down
 ````
 Para e remove o container. Observação: se desejar remover tudo, inclusive os dados persistidos do banco usar `docker-compose down -v`
 
-
+**Obs: Sempre que o arquivo docker-compose ou Dockerfile for alterado faz-se necessário rebuildar o container.**
 
 A aplicação estará disponível em http://127.0.0.1:5000/.
 

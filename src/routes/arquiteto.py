@@ -7,6 +7,7 @@ from domain.endereco import EnderecoDomain
 from model.administrador import Administrador
 from model.arquiteto import Arquiteto
 from model.endereco import Endereco
+from validate_docbr import CPF
 
 
 def registro_rota_arquiteto(app, token_authenticator):
@@ -16,9 +17,19 @@ def registro_rota_arquiteto(app, token_authenticator):
     def cadastrar_arquiteto(user_id=None):
         data = request.get_json()
 
+        cpf_validator = CPF()
+        cpf = data.get('cpf')
+
+        if not cpf_validator.validate(cpf):
+            return jsonify({'message': 'CPF inválido.'}), 400
+
         cpf_existente = Arquiteto.query.filter_by(cpf=data['cpf']).first()
         if cpf_existente:
             return jsonify({'message': 'CPF já cadastrado.'}), 400
+
+        email_existente = Arquiteto.query.filter_by(email=data['email']).first()
+        if email_existente:
+            return jsonify({'message': 'E-mail já cadastrado'}), 400
 
         endereco_domain = EnderecoDomain(data.get('endereco'))
         endereco = endereco_domain.save_endereco()
