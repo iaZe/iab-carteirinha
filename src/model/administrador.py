@@ -9,4 +9,5 @@ class Administrador(db.Model):
     endereco_id = db.Column(db.Integer, db.ForeignKey('enderecos.id'))
     endereco = db.relationship('Endereco', backref=db.backref('administradores', lazy=True))
     email = db.Column(db.String(255), unique=True, nullable=False)
+    fl_ativo = db.Column(db.String(1), nullable=False)
     

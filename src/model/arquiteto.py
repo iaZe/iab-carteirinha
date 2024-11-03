@@ -20,3 +20,4 @@ class Arquiteto(db.Model):
     foto = db.Column(db.String(255))
     site = db.Column(db.String(255))
     numero_cau = db.Column(db.String(50))
+    fl_ativo = db.Column(db.String(1), nullable=False)
