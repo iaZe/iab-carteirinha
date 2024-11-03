@@ -3,7 +3,7 @@
 Baixar e instalar o insomnia, [Link download](https://insomnia.rest/download).
 
 Na página incial clicar em import
-conforme imagem abaixo:
+conforme imagem abaixo e importar arquivo Collections-iabse que pode ser baixado aqui no projeto no folder collections:
 ![insomnia inicial.png](fotos%2Finsomnia%20inicial.png)
 
 Após importado aparecerá assim dessa forma:
