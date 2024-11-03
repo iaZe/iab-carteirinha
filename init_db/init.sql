@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS arquitetos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     cpf VARCHAR(11) UNIQUE NOT NULL,
-    uf_documento VARCHAR(2) NOT NULL,
     matricula VARCHAR(50) NOT NULL,
     celular VARCHAR(15),
     fixo VARCHAR(15),
@@ -29,6 +28,9 @@ CREATE TABLE IF NOT EXISTS arquitetos (
     email VARCHAR(255) NOT NULL,
     hash VARCHAR(255),
     foto VARCHAR(255),
+    numero_cau INT,
+    site VARCHAR(255),
+    fl_ativo VARCHAR(1),
     FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
 );
 
@@ -36,10 +38,9 @@ CREATE TABLE IF NOT EXISTS administradores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     cpf VARCHAR(11) UNIQUE NOT NULL,
-    uf_documento VARCHAR(2) NOT NULL,
-    cargo VARCHAR(100) NOT NULL,
     endereco_id INT,
     email VARCHAR(255) UNIQUE NOT NULL,
+    fl_ativo VARCHAR(1),
     FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
 );
 
@@ -57,5 +58,6 @@ CREATE TABLE IF NOT EXISTS estudantes (
     instituicao_ensino VARCHAR(255),
     matricula_faculdade VARCHAR(50) NOT NULL,
     ano_estimado_conclusao INT,
+    fl_ativo VARCHAR(1),
     FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
 );

@@ -8,7 +8,7 @@ from settings.jwt_manager import JWTManager
 from settings.limiter import RateLimiter
 
 
-def register_routes_login(app, jwt_manager, rate_limiter):
+def registro_rota_login(app, jwt_manager, rate_limiter):
     """User routes register"""
     @app.route('/login', methods=['POST'])
     @rate_limiter.limit("5 per minute")

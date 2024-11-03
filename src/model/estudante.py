@@ -19,3 +19,4 @@ class Estudante(db.Model):
     instituicao_ensino = db.Column(db.String(255))
     matricula_faculdade = db.Column(db.String(50), nullable=False)
     ano_estimado_conclusao = db.Column(db.Integer)
+    fl_ativo = db.Column(db.String(1), nullable=False)
