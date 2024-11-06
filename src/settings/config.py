@@ -7,7 +7,7 @@ class Config:
     DB_HOST = os.environ.get('DB_HOST')
     DB_NAME = os.environ.get('DB_NAME')
 
-    if not all([DB_USER, DB_PASSWORD, DB_NAME]):
+    if not all([DB_USER, DB_HOST, DB_PASSWORD, DB_NAME]):
         raise ValueError("Variáveis de ambiente do banco de dados não configuradas corretamente.")
 
     SQLALCHEMY_DATABASE_URI = (
