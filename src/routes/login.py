@@ -26,8 +26,8 @@ def registro_rota_login(app, jwt_manager, rate_limiter):
             return jsonify({'message': 'Credenciais inválidas!'}), 401
 
         # Gera o token JWT
-        access_token = JWTManager(app.config['SECRET_KEY']).generate_jwt(user.id)
-        refresh_token = JWTManager(app.config['SECRET_KEY']).generate_refresh_token(user.id)
+        access_token = jwt_manager.generate_jwt(user.id)
+        refresh_token = jwt_manager.generate_refresh_token(user.id)
 
         return jsonify({'access_token': access_token, 'refresh_token': refresh_token}), 200
 
@@ -36,6 +36,6 @@ def registro_rota_login(app, jwt_manager, rate_limiter):
     def refresh_token():
         """Rota para criar um novo token de acesso usando o refresh token"""
         identity = get_jwt_identity()
-        new_access_token = JWTManager.generate_jwt(identity)
+        new_access_token = jwt_manager.generate_jwt(identity)
 
         return jsonify({'access_token': new_access_token}), 200
