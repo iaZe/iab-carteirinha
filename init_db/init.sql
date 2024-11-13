@@ -62,3 +62,30 @@ CREATE TABLE IF NOT EXISTS estudantes (
     fl_ativo VARCHAR(1),
     FOREIGN KEY (endereco_id) REFERENCES enderecos(id)
 );
+
+CREATE TABLE IF NOT EXISTS descontos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS vantagens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    descricao VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS parceiros (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    cnpj VARCHAR(14) NOT NULL UNIQUE,
+    celular VARCHAR(15),
+    email VARCHAR(255) NOT NULL,
+    endereco_id INT,
+    vantagens_id INT,
+    descontos_id INT,
+    site VARCHAR(255),
+    fl_ativo VARCHAR(1) NOT NULL,
+    FOREIGN KEY (endereco_id) REFERENCES enderecos(id),
+    FOREIGN KEY (vantagens_id) REFERENCES vantagens(id),
+    FOREIGN KEY (descontos_id) REFERENCES descontos(id)
+);
