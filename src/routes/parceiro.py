@@ -21,7 +21,7 @@ def registro_rota_parceiro(app, token_authenticator):
 
         cnpj_existente = Parceiro.query.filter_by(cnpj=data['cnpj']).first()
         if cnpj_existente:
-            return jsonify({'message': 'CNPJ já cadastrado.'}), 400
+            return jsonify({'message': 'Parceiro já cadastrado.'}), 400
 
         email_existente = Parceiro.query.filter_by(email=data['email']).first()
         if email_existente:
@@ -96,6 +96,7 @@ def registro_rota_parceiro(app, token_authenticator):
         parceiro.nome = data.get('nome', parceiro.nome)
         parceiro.celular = data.get('celular', parceiro.celular)
         parceiro.site = data.get('site', parceiro.site)
+        parceiro.email = data.get('email', parceiro.email)
 
         if parceiro.endereco:
             endereco = parceiro.endereco

@@ -23,7 +23,7 @@ def registro_rota_administrador(app, token_authenticator):
 
         cpf_existente = Administrador.query.filter_by(cpf=data['cpf']).first()
         if cpf_existente:
-            return jsonify({'message': 'CPF já cadastrado.'}), 400
+            return jsonify({'message': 'Administrador já cadastrado.'}), 400
 
         email_existente = Administrador.query.filter_by(email=data['email']).first()
         if email_existente:
