@@ -22,7 +22,7 @@ def registro_rota_beneficio(app, token_authenticator):
         db.session.add(beneficio)
         db.session.flush()
 
-        parceiro.beneficio = beneficio.id
+        parceiro.beneficio = beneficio
         db.session.commit()
 
         return jsonify({'message': 'Benefício cadastrado e associado ao parceiro com sucesso!'}), 201
@@ -40,7 +40,7 @@ def registro_rota_beneficio(app, token_authenticator):
                 'descricao': beneficio.descricao
             }
             resultados.append(result)
-            return jsonify(resultados), 200
+        return jsonify(resultados), 200
 
     @app.route('/beneficio/atualizar/<int:beneficio_id>', methods=['PUT'])
     @token_authenticator.token_required
