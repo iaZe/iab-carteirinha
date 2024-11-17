@@ -6,6 +6,7 @@ from database.sessao import db
 from domain.endereco import EnderecoDomain
 from model.estudante import Estudante
 from validate_docbr import CPF
+import hashlib
 
 from settings.token_auth import TokenAuthenticator
 
@@ -24,7 +25,7 @@ def registro_rota_estudante(app, token_authenticator):
 
         cpf_existente = Estudante.query.filter_by(cpf=data['cpf']).first()
         if cpf_existente:
-            return jsonify({'message': 'CPF já cadastrado.'}), 400
+            return jsonify({'message': 'Estudante já cadastrado.'}), 400
 
         email_existente = Estudante.query.filter_by(email=data['email']).first()
         if email_existente:
@@ -41,7 +42,7 @@ def registro_rota_estudante(app, token_authenticator):
             fl_ativo=1,
             endereco_id=endereco.id,
             email=data['email'],
-            hash=data['hash'],
+            hash= hashlib.sha256(cpf.encode('utf-8')).hexdigest(),
             foto=data.get('foto', None),
             instituicao_ensino=data['instituicao_ensino'],
             matricula_faculdade=data['matricula_faculdade'],
@@ -94,7 +95,7 @@ def registro_rota_estudante(app, token_authenticator):
                 },
                 'fl_ativo': estudante.fl_ativo,
                 'email': estudante.email,
-                'hash': estudante.hash, #TODO: Verificar se vai listar o hash e se pode atualizar
+                'hash': estudante.hash,
                 'foto': estudante.foto,
                 'instituicao_ensino': estudante.instituicao_ensino,
                 'matricula_faculdade': estudante.matricula_faculdade,
@@ -115,6 +116,7 @@ def registro_rota_estudante(app, token_authenticator):
 
         estudante.nome = data.get('nome', estudante.nome)
         estudante.celular = data.get('celular', estudante.celular)
+        estudante.email = data.get('email', estudante.email)
         estudante.fixo = data.get('fixo', estudante.fixo)
         estudante.email = data.get('email', estudante.email)
         estudante.foto = data.get('foto', estudante.foto)

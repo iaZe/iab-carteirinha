@@ -3,8 +3,6 @@ from flask import request, jsonify
 from database.sessao import db
 from domain.endereco import EnderecoDomain
 from model.parceiro import Parceiro
-from model.desconto import Desconto
-from model.vantagem import Vantagem
 from validate_docbr import CNPJ
 
 from settings.token_auth import TokenAuthenticator
@@ -23,7 +21,7 @@ def registro_rota_parceiro(app, token_authenticator):
 
         cnpj_existente = Parceiro.query.filter_by(cnpj=data['cnpj']).first()
         if cnpj_existente:
-            return jsonify({'message': 'CNPJ já cadastrado.'}), 400
+            return jsonify({'message': 'Parceiro já cadastrado.'}), 400
 
         email_existente = Parceiro.query.filter_by(email=data['email']).first()
         if email_existente:
@@ -98,6 +96,7 @@ def registro_rota_parceiro(app, token_authenticator):
         parceiro.nome = data.get('nome', parceiro.nome)
         parceiro.celular = data.get('celular', parceiro.celular)
         parceiro.site = data.get('site', parceiro.site)
+        parceiro.email = data.get('email', parceiro.email)
 
         if parceiro.endereco:
             endereco = parceiro.endereco
@@ -125,39 +124,3 @@ def registro_rota_parceiro(app, token_authenticator):
         db.session.commit()
 
         return jsonify({'message': 'Parceiro inativado com sucesso!'}), 200
-
-    @app.route('/parceiro/<int:parceiro_id>/desconto/cadastrar', methods=['POST'])
-    @token_authenticator.token_required
-    def cadastrar_desconto(parceiro_id, user_id=None):
-        data = request.get_json()
-
-        parceiro = Parceiro.query.get(parceiro_id)
-        if not parceiro:
-            return jsonify({'message': 'Parceiro não encontrado.'}), 404
-
-        desconto = Desconto(descricao=data['descricao'])
-        db.session.add(desconto)
-        db.session.flush()
-
-        parceiro.descontos_id = desconto.id
-        db.session.commit()
-
-        return jsonify({'message': 'Desconto cadastrado e associado ao parceiro com sucesso!'}), 201
-
-    @app.route('/parceiro/<int:parceiro_id>/vantagem/cadastrar', methods=['POST'])
-    @token_authenticator.token_required
-    def cadastrar_vantagem(parceiro_id, user_id=None):
-        data = request.get_json()
-
-        parceiro = Parceiro.query.get(parceiro_id)
-        if not parceiro:
-            return jsonify({'message': 'Parceiro não encontrado.'}), 404
-
-        vantagem = Vantagem(titulo=data['titulo'], descricao=data['descricao'])
-        db.session.add(vantagem)
-        db.session.flush()
-
-        parceiro.vantagens_id = vantagem.id
-        db.session.commit()
-
-        return jsonify({'message': 'Vantagem cadastrada e associada ao parceiro com sucesso!'}), 201
