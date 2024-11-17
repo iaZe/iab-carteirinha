@@ -7,7 +7,6 @@ from model.login import Login
 from settings.jwt_manager import JWTManager
 from settings.limiter import RateLimiter
 
-
 def registro_rota_login(app, jwt_manager, rate_limiter):
     """User routes register"""
     @app.route('/login', methods=['POST'])
@@ -24,6 +23,10 @@ def registro_rota_login(app, jwt_manager, rate_limiter):
 
         if not user or not check_password_hash(user.senha, data['senha']):
             return jsonify({'message': 'Credenciais inválidas!'}), 401
+
+        # Verifica se o usuário está ativo
+        if not user.ativo:
+            return jsonify({'message': 'Login não permitido!'}), 403
 
         # Gera o token JWT
         access_token = JWTManager(app.config['SECRET_KEY']).generate_jwt(user.id)
