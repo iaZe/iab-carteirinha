@@ -8,6 +8,7 @@ from model.administrador import Administrador
 from model.arquiteto import Arquiteto
 from model.endereco import Endereco
 from validate_docbr import CPF
+import hashlib
 
 
 def registro_rota_arquiteto(app, token_authenticator):
@@ -25,7 +26,7 @@ def registro_rota_arquiteto(app, token_authenticator):
 
         cpf_existente = Arquiteto.query.filter_by(cpf=data['cpf']).first()
         if cpf_existente:
-            return jsonify({'message': 'CPF já cadastrado.'}), 400
+            return jsonify({'message': 'Arquiteto já cadastrado.'}), 400
 
         email_existente = Arquiteto.query.filter_by(email=data['email']).first()
         if email_existente:
@@ -41,7 +42,7 @@ def registro_rota_arquiteto(app, token_authenticator):
             fixo=data['fixo'],
             endereco_id=endereco.id,
             email=data['email'],
-            hash=data['hash'],
+            hash= hashlib.sha256(cpf.encode('utf-8')).hexdigest(),
             foto=data['foto'],
             site=data['site'],
             numero_cau=data['numero_cau'],
@@ -118,6 +119,7 @@ def registro_rota_arquiteto(app, token_authenticator):
 
         arquiteto.nome = data.get('nome', arquiteto.nome)
         arquiteto.matricula = data.get('matricula', arquiteto.matricula)
+        arquiteto.email = data.get('email', arquiteto.email)
         arquiteto.celular = data.get('celular', arquiteto.celular)
         arquiteto.fixo = data.get('fixo', arquiteto.fixo)
         arquiteto.email = data.get('email', arquiteto.email)
