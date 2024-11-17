@@ -95,7 +95,7 @@ def registro_rota_estudante(app, token_authenticator):
                 },
                 'fl_ativo': estudante.fl_ativo,
                 'email': estudante.email,
-                'hash': estudante.hash, #TODO: Verificar se vai listar o hash e se pode atualizar
+                'hash': estudante.hash,
                 'foto': estudante.foto,
                 'instituicao_ensino': estudante.instituicao_ensino,
                 'matricula_faculdade': estudante.matricula_faculdade,
