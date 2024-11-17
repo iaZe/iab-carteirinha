@@ -1,3 +1,5 @@
+from utils.mail import enviar_email_confirmacao
+from utils.token import verificar_token_confirmacao
 from datetime import datetime
 
 from flask import request, jsonify
@@ -46,11 +48,20 @@ def registro_rota_arquiteto(app, token_authenticator):
             foto=data['foto'],
             site=data['site'],
             numero_cau=data['numero_cau'],
-            fl_ativo=1
+            fl_ativo=0
         )
         db.session.add(novo_arquiteto)
         db.session.commit()
-        return jsonify({'message': 'Arquiteto criado com sucesso!'}), 201
+
+        try:
+            enviar_email_confirmacao(data['email'], data['nome'])
+        except Exception as e:
+            return jsonify({
+                'message': 'Arquiteto criado com sucesso, mas houve um problema ao enviar o email de confirmação.',
+                'error': str(e)
+            }), 201
+
+        return jsonify({'message': 'Dados salvos, confirme seu cadastro no link enviado por email.'}), 201
 
     @app.route('/arquiteto/buscar', methods=['GET'])
     @token_authenticator.token_required
@@ -115,31 +126,34 @@ def registro_rota_arquiteto(app, token_authenticator):
         arquiteto = Arquiteto.query.get(id)
 
         if not arquiteto:
-            return jsonify({'message': 'Arquiteto não encontrado.'}), 404
+            return jsonify({'message': 'Arquiteto não encontrado.'}),
 
-        arquiteto.nome = data.get('nome', arquiteto.nome)
-        arquiteto.matricula = data.get('matricula', arquiteto.matricula)
-        arquiteto.email = data.get('email', arquiteto.email)
-        arquiteto.celular = data.get('celular', arquiteto.celular)
-        arquiteto.fixo = data.get('fixo', arquiteto.fixo)
-        arquiteto.email = data.get('email', arquiteto.email)
-        arquiteto.foto = data.get('foto', arquiteto.foto)
-        arquiteto.site = data.get('site', arquiteto.site)
-        arquiteto.numero_cau = data.get('numero_cau', arquiteto.numero_cau)
+        if arquiteto.fl_ativo == '0':
+            return jsonify({'message': 'Arquiteto inativo.'}), 400
+        else:
+            arquiteto.nome = data.get('nome', arquiteto.nome)
+            arquiteto.matricula = data.get('matricula', arquiteto.matricula)
+            arquiteto.email = data.get('email', arquiteto.email)
+            arquiteto.celular = data.get('celular', arquiteto.celular)
+            arquiteto.fixo = data.get('fixo', arquiteto.fixo)
+            arquiteto.email = data.get('email', arquiteto.email)
+            arquiteto.foto = data.get('foto', arquiteto.foto)
+            arquiteto.site = data.get('site', arquiteto.site)
+            arquiteto.numero_cau = data.get('numero_cau', arquiteto.numero_cau)
 
-        if arquiteto.endereco:
-            endereco = arquiteto.endereco
-            endereco.cep = data.get('endereco', {}).get('cep', endereco.cep)
-            endereco.logradouro = data.get('endereco', {}).get('logradouro', endereco.logradouro)
-            endereco.complemento = data.get('endereco', {}).get('complemento', endereco.complemento)
-            endereco.numero = data.get('endereco', {}).get('numero', endereco.numero)
-            endereco.bairro = data.get('endereco', {}).get('bairro', endereco.bairro)
-            endereco.cidade = data.get('endereco', {}).get('cidade', endereco.cidade)
-            endereco.estado = data.get('endereco', {}).get('estado', endereco.estado)
+            if arquiteto.endereco:
+                endereco = arquiteto.endereco
+                endereco.cep = data.get('endereco', {}).get('cep', endereco.cep)
+                endereco.logradouro = data.get('endereco', {}).get('logradouro', endereco.logradouro)
+                endereco.complemento = data.get('endereco', {}).get('complemento', endereco.complemento)
+                endereco.numero = data.get('endereco', {}).get('numero', endereco.numero)
+                endereco.bairro = data.get('endereco', {}).get('bairro', endereco.bairro)
+                endereco.cidade = data.get('endereco', {}).get('cidade', endereco.cidade)
+                endereco.estado = data.get('endereco', {}).get('estado', endereco.estado)
 
-        db.session.commit()
+            db.session.commit()
 
-        return jsonify({'message': 'Arquiteto atualizado com sucesso!'}), 200
+            return jsonify({'message': 'Arquiteto atualizado com sucesso!'}), 200
 
     @app.route('/arquiteto/excluir/<int:id>', methods=['PUT'])
     @token_authenticator.token_required
@@ -153,3 +167,20 @@ def registro_rota_arquiteto(app, token_authenticator):
         db.session.commit()
 
         return jsonify({'message': 'Arquiteto inativado com sucesso!'})
+
+    @app.route('/arquiteto/confirmar/<token>', methods=['GET'])
+    def confirmar_email(token):
+        email = verificar_token_confirmacao(token)
+        if not email:
+            return jsonify({'message': 'Token inválido ou expirado.'}), 400
+
+        arquiteto = Arquiteto.query.filter_by(email=email).first()
+        if not arquiteto:
+            return jsonify({'message': 'Usuário não encontrado.'}), 404
+
+        if arquiteto.fl_ativo == 1:
+            return jsonify({'message': 'Usuário já confirmado.'}), 400
+
+        arquiteto.fl_ativo = 1
+        db.session.commit()
+        return jsonify({'message': 'Cadastro confirmado com sucesso!'}), 200
