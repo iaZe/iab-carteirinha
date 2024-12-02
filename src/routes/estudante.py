@@ -1,4 +1,6 @@
 from datetime import datetime
+from utils.mail import enviar_email_confirmacao_estudante
+from utils.token import verificar_token_confirmacao
 
 from flask import request, jsonify
 
@@ -6,6 +8,7 @@ from database.sessao import db
 from domain.endereco import EnderecoDomain
 from model.estudante import Estudante
 from validate_docbr import CPF
+from email_validator import validate_email, EmailNotValidError
 import hashlib
 
 from settings.token_auth import TokenAuthenticator
@@ -27,6 +30,13 @@ def registro_rota_estudante(app, token_authenticator):
         if cpf_existente:
             return jsonify({'message': 'Estudante já cadastrado.'}), 400
 
+        email = data.get('email')
+        try:
+            valid_email = validate_email(email)
+            email_normalizado = valid_email.email
+        except EmailNotValidError as e:
+            return jsonify({'message': f'E-mail inválido: {str(e)}'}), 400
+
         email_existente = Estudante.query.filter_by(email=data['email']).first()
         if email_existente:
             return jsonify({'message': 'E-mail já cadastrado'}), 400
@@ -39,9 +49,9 @@ def registro_rota_estudante(app, token_authenticator):
             celular=data['celular'],
             fixo=data['fixo'],
             data_cadastro=datetime.now(),
-            fl_ativo=1,
+            fl_ativo=0,
             endereco_id=endereco.id,
-            email=data['email'],
+            email=email_normalizado,
             hash= hashlib.sha256(cpf.encode('utf-8')).hexdigest(),
             foto=data.get('foto', None),
             instituicao_ensino=data['instituicao_ensino'],
@@ -50,7 +60,16 @@ def registro_rota_estudante(app, token_authenticator):
         )
         db.session.add(novo_estudante)
         db.session.commit()
-        return jsonify({'message': 'Estudante cadastrado com sucesso!'}), 201
+
+        try:
+            enviar_email_confirmacao_estudante(data['email'], data['nome'])
+        except Exception as e:
+            return jsonify({
+                'message': 'Estudante criado com sucesso, mas houve um problema ao enviar o email de confirmação.',
+                'error': str(e)
+            }), 201
+
+        return jsonify({'message': 'Dados salvos, confirme seu cadastro no link enviado por email.'}), 201
 
     @app.route('/estudante/buscar', methods=['GET'])
     @token_authenticator.token_required
@@ -114,11 +133,21 @@ def registro_rota_estudante(app, token_authenticator):
         if not estudante:
             return jsonify({'message': 'Estudante não encontrado.'}), 404
 
+        if estudante.fl_ativo == '0':
+            return jsonify({'message': 'Estudante inativo.'}), 400
+
+        email = data.get('email')
+        try:
+            valid_email = validate_email(email)
+            email_normalizado = valid_email.email
+        except EmailNotValidError as e:
+            return jsonify({'message': f'E-mail inválido: {str(e)}'}), 400
+
         estudante.nome = data.get('nome', estudante.nome)
         estudante.celular = data.get('celular', estudante.celular)
         estudante.email = data.get('email', estudante.email)
         estudante.fixo = data.get('fixo', estudante.fixo)
-        estudante.email = data.get('email', estudante.email)
+        estudante.email = email_normalizado
         estudante.foto = data.get('foto', estudante.foto)
         estudante.instituicao_ensino = data.get('instituicao_ensino', estudante.instituicao_ensino)
         estudante.matricula_faculdade = data.get('matricula_faculdade', estudante.matricula_faculdade)
@@ -150,3 +179,20 @@ def registro_rota_estudante(app, token_authenticator):
         db.session.commit()
 
         return jsonify({'message': 'Estudante inativado com sucesso!'}), 200
+
+    @app.route('/estudante/confirmar/<token>', methods=['GET'])
+    def confirmar_email_estudante(token):
+        email = verificar_token_confirmacao(token)
+        if not email:
+            return jsonify({'message': 'Token inválido ou expirado.'}), 400
+
+        estudante = Estudante.query.filter_by(email=email).first()
+        if not estudante:
+            return jsonify({'message': 'Usuário não encontrado.'}), 404
+
+        if estudante.fl_ativo == 1:
+            return jsonify({'message': 'Usuário já confirmado.'}), 400
+
+        estudante.fl_ativo = 1
+        db.session.commit()
+        return jsonify({'message': 'Cadastro confirmado com sucesso!'}), 200
