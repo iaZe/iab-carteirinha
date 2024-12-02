@@ -1,3 +1,5 @@
+from utils.mail import enviar_email_confirmacao_arquiteto
+from utils.token import verificar_token_confirmacao
 from datetime import datetime
 
 from flask import request, jsonify
@@ -8,6 +10,7 @@ from model.administrador import Administrador
 from model.arquiteto import Arquiteto
 from model.endereco import Endereco
 from validate_docbr import CPF
+from email_validator import validate_email, EmailNotValidError
 import hashlib
 
 
@@ -20,13 +23,19 @@ def registro_rota_arquiteto(app, token_authenticator):
 
         cpf_validator = CPF()
         cpf = data.get('cpf')
-
         if not cpf_validator.validate(cpf):
             return jsonify({'message': 'CPF inválido.'}), 400
 
         cpf_existente = Arquiteto.query.filter_by(cpf=data['cpf']).first()
         if cpf_existente:
             return jsonify({'message': 'Arquiteto já cadastrado.'}), 400
+
+        email = data.get('email')
+        try:
+            valid_email = validate_email(email)
+            email_normalizado = valid_email.email
+        except EmailNotValidError as e:
+            return jsonify({'message': f'E-mail inválido: {str(e)}'}), 400
 
         email_existente = Arquiteto.query.filter_by(email=data['email']).first()
         if email_existente:
@@ -41,16 +50,25 @@ def registro_rota_arquiteto(app, token_authenticator):
             celular=data['celular'],
             fixo=data['fixo'],
             endereco_id=endereco.id,
-            email=data['email'],
+            email=email_normalizado,
             hash= hashlib.sha256(cpf.encode('utf-8')).hexdigest(),
             foto=data['foto'],
             site=data['site'],
             numero_cau=data['numero_cau'],
-            fl_ativo=1
+            fl_ativo=0
         )
         db.session.add(novo_arquiteto)
         db.session.commit()
-        return jsonify({'message': 'Arquiteto criado com sucesso!'}), 201
+
+        try:
+            enviar_email_confirmacao_arquiteto(data['email'], data['nome'])
+        except Exception as e:
+            return jsonify({
+                'message': 'Arquiteto criado com sucesso, mas houve um problema ao enviar o email de confirmação.',
+                'error': str(e)
+            }), 201
+
+        return jsonify({'message': 'Dados salvos, confirme seu cadastro no link enviado por email.'}), 201
 
     @app.route('/arquiteto/buscar', methods=['GET'])
     @token_authenticator.token_required
@@ -115,14 +133,23 @@ def registro_rota_arquiteto(app, token_authenticator):
         arquiteto = Arquiteto.query.get(id)
 
         if not arquiteto:
-            return jsonify({'message': 'Arquiteto não encontrado.'}), 404
+            return jsonify({'message': 'Arquiteto não encontrado.'}),
+
+        if arquiteto.fl_ativo == '0':
+            return jsonify({'message': 'Arquiteto inativo.'}), 400
+
+        email = data.get('email')
+        try:
+            valid_email = validate_email(email)
+            email_normalizado = valid_email.email
+        except EmailNotValidError as e:
+            return jsonify({'message': f'E-mail inválido: {str(e)}'}), 400
 
         arquiteto.nome = data.get('nome', arquiteto.nome)
         arquiteto.matricula = data.get('matricula', arquiteto.matricula)
-        arquiteto.email = data.get('email', arquiteto.email)
+        arquiteto.email = email_normalizado
         arquiteto.celular = data.get('celular', arquiteto.celular)
         arquiteto.fixo = data.get('fixo', arquiteto.fixo)
-        arquiteto.email = data.get('email', arquiteto.email)
         arquiteto.foto = data.get('foto', arquiteto.foto)
         arquiteto.site = data.get('site', arquiteto.site)
         arquiteto.numero_cau = data.get('numero_cau', arquiteto.numero_cau)
@@ -153,3 +180,20 @@ def registro_rota_arquiteto(app, token_authenticator):
         db.session.commit()
 
         return jsonify({'message': 'Arquiteto inativado com sucesso!'})
+
+    @app.route('/arquiteto/confirmar/<token>', methods=['GET'])
+    def confirmar_email_arquiteto(token):
+        email = verificar_token_confirmacao(token)
+        if not email:
+            return jsonify({'message': 'Token inválido ou expirado.'}), 400
+
+        arquiteto = Arquiteto.query.filter_by(email=email).first()
+        if not arquiteto:
+            return jsonify({'message': 'Usuário não encontrado.'}), 404
+
+        if arquiteto.fl_ativo == 1:
+            return jsonify({'message': 'Usuário já confirmado.'}), 400
+
+        arquiteto.fl_ativo = 1
+        db.session.commit()
+        return jsonify({'message': 'Cadastro confirmado com sucesso!'}), 200
