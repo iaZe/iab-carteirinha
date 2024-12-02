@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from flask import Flask
 from flask_mail import Mail
-from utils.mail import mail, enviar_email_confirmacao
+from utils.mail import mail, enviar_email_confirmacao_arquiteto
 
 from database.sessao import db
 from routes.administrador import registro_rota_administrador
@@ -11,6 +11,7 @@ from routes.login import registro_rota_login
 from routes.usuario import registro_rota_usuario
 from routes.parceiro import registro_rota_parceiro
 from routes.beneficio import registro_rota_beneficio
+from routes.carteira import registro_rota_carteira
 from settings.config import Config
 from settings.jwt_manager import JWTManager
 from settings.limiter import RateLimiter
@@ -39,5 +40,6 @@ def create_app():
     registro_rota_estudante(app, token_authenticator)
     registro_rota_parceiro(app, token_authenticator)
     registro_rota_beneficio(app, token_authenticator)
+    registro_rota_carteira(app, token_authenticator)
 
     return app
