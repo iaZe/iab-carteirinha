@@ -1,4 +1,4 @@
-from utils.mail import enviar_email_confirmacao
+from utils.mail import enviar_email_confirmacao_arquiteto
 from utils.token import verificar_token_confirmacao
 from datetime import datetime
 
@@ -10,6 +10,7 @@ from model.administrador import Administrador
 from model.arquiteto import Arquiteto
 from model.endereco import Endereco
 from validate_docbr import CPF
+from email_validator import validate_email, EmailNotValidError
 import hashlib
 
 
@@ -22,13 +23,19 @@ def registro_rota_arquiteto(app, token_authenticator):
 
         cpf_validator = CPF()
         cpf = data.get('cpf')
-
         if not cpf_validator.validate(cpf):
             return jsonify({'message': 'CPF inválido.'}), 400
 
         cpf_existente = Arquiteto.query.filter_by(cpf=data['cpf']).first()
         if cpf_existente:
             return jsonify({'message': 'Arquiteto já cadastrado.'}), 400
+
+        email = data.get('email')
+        try:
+            valid_email = validate_email(email)
+            email_normalizado = valid_email.email
+        except EmailNotValidError as e:
+            return jsonify({'message': f'E-mail inválido: {str(e)}'}), 400
 
         email_existente = Arquiteto.query.filter_by(email=data['email']).first()
         if email_existente:
@@ -43,7 +50,7 @@ def registro_rota_arquiteto(app, token_authenticator):
             celular=data['celular'],
             fixo=data['fixo'],
             endereco_id=endereco.id,
-            email=data['email'],
+            email=email_normalizado,
             hash= hashlib.sha256(cpf.encode('utf-8')).hexdigest(),
             foto=data['foto'],
             site=data['site'],
@@ -54,7 +61,7 @@ def registro_rota_arquiteto(app, token_authenticator):
         db.session.commit()
 
         try:
-            enviar_email_confirmacao(data['email'], data['nome'])
+            enviar_email_confirmacao_arquiteto(data['email'], data['nome'])
         except Exception as e:
             return jsonify({
                 'message': 'Arquiteto criado com sucesso, mas houve um problema ao enviar o email de confirmação.',
@@ -130,30 +137,36 @@ def registro_rota_arquiteto(app, token_authenticator):
 
         if arquiteto.fl_ativo == '0':
             return jsonify({'message': 'Arquiteto inativo.'}), 400
-        else:
-            arquiteto.nome = data.get('nome', arquiteto.nome)
-            arquiteto.matricula = data.get('matricula', arquiteto.matricula)
-            arquiteto.email = data.get('email', arquiteto.email)
-            arquiteto.celular = data.get('celular', arquiteto.celular)
-            arquiteto.fixo = data.get('fixo', arquiteto.fixo)
-            arquiteto.email = data.get('email', arquiteto.email)
-            arquiteto.foto = data.get('foto', arquiteto.foto)
-            arquiteto.site = data.get('site', arquiteto.site)
-            arquiteto.numero_cau = data.get('numero_cau', arquiteto.numero_cau)
 
-            if arquiteto.endereco:
-                endereco = arquiteto.endereco
-                endereco.cep = data.get('endereco', {}).get('cep', endereco.cep)
-                endereco.logradouro = data.get('endereco', {}).get('logradouro', endereco.logradouro)
-                endereco.complemento = data.get('endereco', {}).get('complemento', endereco.complemento)
-                endereco.numero = data.get('endereco', {}).get('numero', endereco.numero)
-                endereco.bairro = data.get('endereco', {}).get('bairro', endereco.bairro)
-                endereco.cidade = data.get('endereco', {}).get('cidade', endereco.cidade)
-                endereco.estado = data.get('endereco', {}).get('estado', endereco.estado)
+        email = data.get('email')
+        try:
+            valid_email = validate_email(email)
+            email_normalizado = valid_email.email
+        except EmailNotValidError as e:
+            return jsonify({'message': f'E-mail inválido: {str(e)}'}), 400
 
-            db.session.commit()
+        arquiteto.nome = data.get('nome', arquiteto.nome)
+        arquiteto.matricula = data.get('matricula', arquiteto.matricula)
+        arquiteto.email = email_normalizado
+        arquiteto.celular = data.get('celular', arquiteto.celular)
+        arquiteto.fixo = data.get('fixo', arquiteto.fixo)
+        arquiteto.foto = data.get('foto', arquiteto.foto)
+        arquiteto.site = data.get('site', arquiteto.site)
+        arquiteto.numero_cau = data.get('numero_cau', arquiteto.numero_cau)
 
-            return jsonify({'message': 'Arquiteto atualizado com sucesso!'}), 200
+        if arquiteto.endereco:
+            endereco = arquiteto.endereco
+            endereco.cep = data.get('endereco', {}).get('cep', endereco.cep)
+            endereco.logradouro = data.get('endereco', {}).get('logradouro', endereco.logradouro)
+            endereco.complemento = data.get('endereco', {}).get('complemento', endereco.complemento)
+            endereco.numero = data.get('endereco', {}).get('numero', endereco.numero)
+            endereco.bairro = data.get('endereco', {}).get('bairro', endereco.bairro)
+            endereco.cidade = data.get('endereco', {}).get('cidade', endereco.cidade)
+            endereco.estado = data.get('endereco', {}).get('estado', endereco.estado)
+
+        db.session.commit()
+
+        return jsonify({'message': 'Arquiteto atualizado com sucesso!'}), 200
 
     @app.route('/arquiteto/excluir/<int:id>', methods=['PUT'])
     @token_authenticator.token_required
@@ -169,7 +182,7 @@ def registro_rota_arquiteto(app, token_authenticator):
         return jsonify({'message': 'Arquiteto inativado com sucesso!'})
 
     @app.route('/arquiteto/confirmar/<token>', methods=['GET'])
-    def confirmar_email(token):
+    def confirmar_email_arquiteto(token):
         email = verificar_token_confirmacao(token)
         if not email:
             return jsonify({'message': 'Token inválido ou expirado.'}), 400
