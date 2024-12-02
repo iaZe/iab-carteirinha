@@ -83,3 +83,17 @@ CREATE TABLE IF NOT EXISTS parceiros (
     FOREIGN KEY (endereco_id) REFERENCES enderecos(id),
     FOREIGN KEY (beneficio_id) REFERENCES beneficios(id)
 );
+
+CREATE TABLE IF NOT EXISTS carteiras (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    cpf VARCHAR(11) NOT NULL UNIQUE,
+    matricula VARCHAR(50) NOT NULL,
+    data_filiacao DATETIME NOT NULL,
+    data_validade DATETIME NOT NULL,
+    hash VARCHAR(255) NOT NULL,
+    foto VARCHAR(255) NOT NULL,
+    fl_ativo CHAR(1) NOT NULL,
+    arquiteto_id INT UNIQUE,
+    FOREIGN KEY (arquiteto_id) REFERENCES arquitetos(id)
+);
