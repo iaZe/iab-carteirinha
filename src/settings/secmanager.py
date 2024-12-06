@@ -1,6 +1,6 @@
-import base64, binascii, uuid
+import base64, binascii
 from os import urandom
-from flask import jsonify
+from flask import jsonify, current_app
 from cryptography.exceptions import InvalidKey, InvalidTag
 from cryptography.hazmat.primitives.ciphers.aead import AESGCMSIV
 
@@ -8,21 +8,9 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCMSIV
 class SecurityManager:
 
     @classmethod
-    def generateUUID(cls):
-        return uuid.uuid4()
-    
-    @classmethod
-    def validateUUID(cls, uuid_to_validate):
+    def generateAdminAuthToken(cls, data: bytes):
         try:
-            uuid_object = uuid.UUID(uuid_to_validate.hex, version=4)
-            return uuid_object == uuid_to_validate
-        except Exception:
-            return None
-
-    @classmethod
-    def generateAdminAuthToken(cls, data: bytes, key: bytes):
-        try:
-            key = base64.urlsafe_b64decode(key)
+            key = bytes(current_app.config['SECRET_KEY'], 'utf-8')
 
             nonce = urandom(12)
 
@@ -39,9 +27,9 @@ class SecurityManager:
             return jsonify({'mensagem': 'Tipo da chave é inválido!'}), 400
 
     @classmethod
-    def validateAdminAuthToken(cls, token: bytes, key: bytes):
+    def validateAdminAuthToken(cls, token: bytes):
         try:
-            key = base64.urlsafe_b64decode(key)
+            key = bytes(current_app.config['SECRET_KEY'], 'utf-8')
 
             token = base64.urlsafe_b64decode(token)
 

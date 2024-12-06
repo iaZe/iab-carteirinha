@@ -14,7 +14,7 @@ class RateLimiter:
             key_func=get_remote_address,
             app=app,
             default_limits=default_limits or ["5 per minute"],
-            storage_uri="redis://localhost:6379"
+            #storage_uri="redis://redis:6379"
         )
 
     def limit(self, limit_rule):

@@ -7,11 +7,7 @@ estruturado de forma modular para fácil manutenção e escalabilidade.
 
 ## Pré-requisitos
 
-Python 3.10
-
-Virtualenv
-
-Flask
+Docker Desktop
 
 ## Configuração do Ambiente
 
@@ -23,58 +19,21 @@ Siga os passos abaixo para configurar o ambiente e executar o projeto localmente
 git clone https://github.com/user/repositorio.git
 cd repositorio
 ````
-### 2. Criar e Ativar um Ambiente Virtual
+### 2. Docker
 
-Crie o ambiente virtual para isolar as dependências do projeto.
-
-````
-# Criar o ambiente virtual
-python -m venv .venv
-
-# Ativar o ambiente virtual (Linux/MacOS)
-source .venv/bin/activate
-
-# Ativar o ambiente virtual (Windows)
-.venv\Scripts\activate
-````
-
-### 3. Instalar Dependências
-
-Com o ambiente virtual ativado, instale as dependências listadas no arquivo requirements.txt.
+No terminal da sua IDE:
 
 ````
-pip install -r requirements.txt
+docker-compose up --build
 ````
-
-### 4. Configurar Variáveis de Ambiente
-
-Certifique-se de configurar suas variáveis de ambiente (por exemplo, detalhes de conexão com o banco de dados) no arquivo .env. Um exemplo básico de como deve ser o arquivo .env para usar SQLite:
+Subir o projeto e buildar a imagem do docker, para somente subir usar `docker-compose up`.
 
 ````
-FLASK_APP=settings.flask_app
-FLASK_ENV=development
-DATABASE_URL=sqlite:///seu_banco_de_dados.db
+docker-compose down
 ````
+Para e remove o container. Observação: se desejar remover tudo, inclusive os dados persistidos do banco usar `docker-compose down -v`
 
-Por padrão, o SQLite cria um arquivo de banco de dados local. Se o arquivo seu_banco_de_dados.db não existir, ele será criado automaticamente na raiz do projeto.
-
-### 5. Inicializar o Banco de Dados
-
-Execute os comandos de migração do banco de dados, se aplicável, para configurar o SQLite.
-
-````
-flask db upgrade
-````
-
-Caso você não utilize migrações automáticas, poderá criar o banco de dados manualmente, garantindo que ele esteja pronto para uso.
-
-### 6. Executar a Aplicação
-
-Para iniciar o servidor Flask, execute o comando abaixo:
-
-````
-flask run
-````
+**Obs: Sempre que o arquivo docker-compose ou Dockerfile for alterado faz-se necessário rebuildar o container.**
 
 A aplicação estará disponível em http://127.0.0.1:5000/.
 
