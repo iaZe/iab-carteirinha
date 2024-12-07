@@ -8,9 +8,10 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCMSIV
 class SecurityManager:
 
     @classmethod
-    def generateAdminAuthToken(cls, data: bytes):
+    def generateAdminAuthToken(cls, data: bytes, key: bytes):
         try:
-            key = bytes(current_app.config['SECRET_KEY'], 'utf-8')
+            if len(key) != 32:
+                 raise ValueError
 
             nonce = urandom(12)
 
@@ -19,18 +20,17 @@ class SecurityManager:
             encrypted = nonce + aesgcmsiv.encrypt(nonce, data, key)
 
             return base64.urlsafe_b64encode(encrypted)
-        except binascii.Error:
-            return jsonify({'mensagem': 'Formato base64 da chave é inválido!'}), 400
         except ValueError:
             return jsonify({'mensagem': 'Tamanho da chave é inválido!'}), 400
         except TypeError:
             return jsonify({'mensagem': 'Tipo da chave é inválido!'}), 400
 
     @classmethod
-    def validateAdminAuthToken(cls, token: bytes):
+    def validateAdminAuthToken(cls, token: bytes, key: bytes):
         try:
-            key = bytes(current_app.config['SECRET_KEY'], 'utf-8')
-
+            if len(key) != 32:
+                raise InvalidKey
+            
             token = base64.urlsafe_b64decode(token)
 
             nonce, encrypted = token[:12], token[12:]
