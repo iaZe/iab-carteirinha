@@ -1,9 +1,7 @@
 from utils.mail import enviar_email_confirmacao_arquiteto
 from utils.token import verificar_token_confirmacao
 from datetime import datetime
-
 from flask import request, jsonify
-
 from database.sessao import db
 from domain.endereco import EnderecoDomain
 from model.administrador import Administrador
@@ -11,6 +9,7 @@ from model.arquiteto import Arquiteto
 from model.endereco import Endereco
 from validate_docbr import CPF
 from email_validator import validate_email, EmailNotValidError
+from utils.date_format import formatar_data
 import hashlib
 
 
@@ -55,7 +54,8 @@ def registro_rota_arquiteto(app, token_authenticator):
             foto=data['foto'],
             site=data['site'],
             numero_cau=data['numero_cau'],
-            fl_ativo=0
+            fl_ativo=0,
+            data_fim_filiacao=datetime.utcnow() + timedelta(days=365)
         )
         db.session.add(novo_arquiteto)
         db.session.commit()

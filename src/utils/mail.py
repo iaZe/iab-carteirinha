@@ -12,7 +12,7 @@ def enviar_email_confirmacao_arquiteto(email, nome):
  try:
      token = gerar_token_confirmacao(email)
      dominio = urlparse(request.base_url)
-         link_confirmacao = f"https://{dominio}/arquiteto/confirmar/{token}"
+     link_confirmacao = f"https://{dominio}/arquiteto/confirmar/{token}"
 
      msg = Message(
          subject="Confirmação de Cadastro",
