@@ -3,8 +3,13 @@ from datetime import datetime, timedelta
 from database.sessao import db
 from model.carteira import Carteira
 from model.arquiteto import Arquiteto
-
+from utils.upload import upload_comprovante
+from utils.comprovante import gerar_comprovante
+from utils.date_format import formatar_data
 import hashlib
+
+def formatar_data(data):
+    return data.strftime('%d/%m/%Y')
 
 def registro_rota_carteira(app, token_authenticator):
     @app.route('/carteira/emitir/<int:arquiteto_id>', methods=['POST'])
@@ -20,7 +25,7 @@ def registro_rota_carteira(app, token_authenticator):
             return jsonify({'message': 'O arquiteto já possui uma carteira emitida.'}), 400
 
         try:
-            data_filiacao = datetime.strptime(data['data_filiacao'], '%Y-%m-%d')
+            data_filiacao = datetime.strptime(data['data_filiacao'], '%d-%m-%Y')
             nova_carteira = Carteira(
                 nome=data['nome'],
                 cpf=data['cpf'],
@@ -76,7 +81,7 @@ def registro_rota_carteira(app, token_authenticator):
             }
             resultados.append(result)
 
-        return jsonify(resultados), 200
+            return jsonify(resultados), 200
 
     @app.route('/carteira/atualizar/<int:id>', methods=['PUT'])
     @token_authenticator.token_required
@@ -97,7 +102,7 @@ def registro_rota_carteira(app, token_authenticator):
 
         data_filiacao = data.get('data_filiacao')
         if data_filiacao:
-            carteira.data_filiacao = datetime.strptime(data_filiacao, '%Y-%m-%d')
+            carteira.data_filiacao = datetime.strptime(data_filiacao, '%d-%m-%Y')
             carteira.data_validade = carteira.data_filiacao + timedelta(days=365)
 
         db.session.commit()
@@ -129,3 +134,25 @@ def registro_rota_carteira(app, token_authenticator):
         db.session.commit()
 
         return jsonify({'message': 'Carteira ativada com sucesso!'}), 200
+
+    @app.route('/carteira/renovar/<int:arquiteto_id>', methods=['POST'])
+    @token_authenticator.token_required
+    def renovar_carteirinha_route(arquiteto_id, user_id=None):
+        anos = request.json.get('anos', 1)
+        arquiteto = Arquiteto.query.get(arquiteto_id)
+        if not arquiteto:
+            return jsonify({'erro': 'Arquiteto não encontrado.'}), 404
+
+        # Validação para renovar apenas se a data atual for maior que a data de fim de afiliação
+        if arquiteto.data_fim_filiacao and arquiteto.data_fim_filiacao >= datetime.utcnow():
+            return jsonify({'erro': 'A carteirinha só pode ser renovada após a data fim da afiliação.'}), 400
+
+        arquiteto.renovar_carteirinha(anos)
+        comprovante = gerar_comprovante(arquiteto)
+        comprovante_url = upload_comprovante(comprovante)
+
+        return jsonify({
+            'mensagem': 'Carteirinha renovada com sucesso!',
+            'data_fim_filiacao': formatar_data(arquiteto.data_fim_filiacao),
+            'comprovante': comprovante_url
+        })
