@@ -1,6 +1,6 @@
 from utils.mail import enviar_email_confirmacao_arquiteto
 from utils.token import verificar_token_confirmacao
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import request, jsonify
 from database.sessao import db
 from domain.endereco import EnderecoDomain

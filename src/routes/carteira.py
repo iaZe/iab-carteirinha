@@ -135,12 +135,13 @@ def registro_rota_carteira(app, token_authenticator):
     @app.route('/carteira/renovar/<int:arquiteto_id>', methods=['POST'])
     @token_authenticator.token_required
     def renovar_carteirinha_route(arquiteto_id, user_id=None):
+        print("Rota /carteira/renovar chamada")
         anos = request.json.get('anos', 1)
         arquiteto = Arquiteto.query.get(arquiteto_id)
         if not arquiteto:
             return jsonify({'erro': 'Arquiteto não encontrado.'}), 404
 
-        # Validação para renovar apenas se a data atual for maior que a data de fim de afiliação
+        # Validação para renovar apenas se a data atual for maior que a data de fim de afiliação "Givaldo"
         if arquiteto.data_fim_filiacao and arquiteto.data_fim_filiacao >= datetime.utcnow():
             return jsonify({'erro': 'A carteirinha só pode ser renovada após a data fim da afiliação.'}), 400
 

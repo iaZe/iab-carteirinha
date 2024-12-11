@@ -8,6 +8,7 @@ from routes.estudante import registro_rota_estudante
 from routes.login import registro_rota_login
 from routes.usuario import registro_rota_usuario
 from routes.qrcode import registro_rota_qrcode
+from routes.carteira import registro_rota_carteira
 from settings.config import Config
 from settings.jwt_manager import JWTManager
 from settings.limiter import RateLimiter
@@ -33,5 +34,6 @@ def create_app():
     registro_rota_estudante(app, token_authenticator)
     registro_rota_login(app, jwt_manager, rate_limiter)
     registro_rota_administrador(app, token_authenticator)
+    registro_rota_carteira(app, token_authenticator)
 
     return app
