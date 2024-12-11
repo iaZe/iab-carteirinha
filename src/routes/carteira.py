@@ -8,9 +8,6 @@ from utils.comprovante import gerar_comprovante
 from utils.date_format import formatar_data
 import hashlib
 
-def formatar_data(data):
-    return data.strftime('%d/%m/%Y')
-
 def registro_rota_carteira(app, token_authenticator):
     @app.route('/carteira/emitir/<int:arquiteto_id>', methods=['POST'])
     @token_authenticator.token_required

@@ -10,6 +10,9 @@ RUN /app/.venv/bin/pip install --upgrade pip && \
 
 COPY . /app
 
+# Copiar o arquivo .env para o contêiner "Givaldo"
+COPY .env /app/.env
+
 ENV FLASK_APP=src/app.py:create_app
 ENV PYTHONPATH=/app/src
 ENV PATH="/app/.venv/bin:$PATH"

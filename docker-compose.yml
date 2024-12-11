@@ -19,6 +19,8 @@ services:
       REDIS_HOST: redis-14542.c265.us-east-1-2.ec2.redns.redis-cloud.com
       REDIS_PORT: 14542
       REDIS_PASSWORD: xnniFaO1zl2ytYGhovw9jllmZHsOsQjF
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     depends_on:
       - db
       - redis
