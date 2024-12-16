@@ -1,16 +1,17 @@
-from utils.mail import enviar_email_confirmacao_arquiteto
-from utils.token import verificar_token_confirmacao
+import hashlib
 from datetime import datetime, timedelta
+from email_validator import validate_email, EmailNotValidError
 from flask import request, jsonify
+from validate_docbr import CPF
+
 from database.sessao import db
 from domain.endereco import EnderecoDomain
 from model.administrador import Administrador
 from model.arquiteto import Arquiteto
 from model.endereco import Endereco
-from validate_docbr import CPF
-from email_validator import validate_email, EmailNotValidError
 from utils.date_format import formatar_data
-import hashlib
+from utils.mail import enviar_email_confirmacao
+from utils.token import verificar_token_confirmacao
 
 
 def registro_rota_arquiteto(app, token_authenticator):
@@ -61,7 +62,7 @@ def registro_rota_arquiteto(app, token_authenticator):
         db.session.commit()
 
         try:
-            enviar_email_confirmacao_arquiteto(data['email'], data['nome'])
+            enviar_email_confirmacao(data['email'], data['nome'])
         except Exception as e:
             return jsonify({
                 'message': 'Arquiteto criado com sucesso, mas houve um problema ao enviar o email de confirmação.',

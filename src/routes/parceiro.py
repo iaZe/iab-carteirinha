@@ -1,11 +1,13 @@
+import re
+from email_validator import validate_email, EmailNotValidError
 from flask import request, jsonify
+from validate_docbr import CNPJ
 
 from database.sessao import db
 from domain.endereco import EnderecoDomain
 from model.parceiro import Parceiro
-from validate_docbr import CNPJ
-
 from settings.token_auth import TokenAuthenticator
+
 
 def registro_rota_parceiro(app, token_authenticator):
     @app.route('/parceiro/cadastrar', methods=['POST'])
@@ -23,25 +25,46 @@ def registro_rota_parceiro(app, token_authenticator):
         if cnpj_existente:
             return jsonify({'message': 'Parceiro já cadastrado.'}), 400
 
+        email = data.get('email')
+        try:
+            valid_email = validate_email(email)
+            email_normalizado = valid_email.email
+        except EmailNotValidError as e:
+            return jsonify({'message': f'E-mail inválido: {str(e)}'}), 400
+
         email_existente = Parceiro.query.filter_by(email=data['email']).first()
         if email_existente:
             return jsonify({'message': 'E-mail já cadastrado'}), 400
+
+        nome = data.get('nome')
+        if nome:
+            if not re.match(r'^[A-Za-z\s]+$', nome):
+                return jsonify({'message': 'O nome deve conter apenas letras.'}), 400
 
         endereco_domain = EnderecoDomain(data.get('endereco'))
         endereco = endereco_domain.save_endereco()
 
         novo_parceiro = Parceiro(
-            nome=data['nome'],
-            cnpj=data['cnpj'],
+            nome=nome,
+            cnpj=cnpj,
             endereco_id=endereco.id,
             celular=data['celular'],
-            email=data['email'],
+            email=email_normalizado,
             site=data['site'],
-            fl_ativo=1
+            fl_ativo=0
         )
         db.session.add(novo_parceiro)
         db.session.commit()
-        return jsonify({'message': 'Parceiro cadastrado com sucesso!'}), 201
+
+        try:
+            enviar_email_confirmacao(data['email'], data['nome'])
+        except Exception as e:
+            return jsonify({
+                'message': 'Parceiro cadastrado com sucesso, mas houve um problema ao enviar o email de confirmação.',
+                'error': str(e)
+            }), 201
+
+        return jsonify({'message': 'Dados salvos, confirme seu cadastro no link enviado por email.'}), 201
 
     @app.route('/parceiro/buscar', methods=['GET'])
     @token_authenticator.token_required
@@ -124,3 +147,20 @@ def registro_rota_parceiro(app, token_authenticator):
         db.session.commit()
 
         return jsonify({'message': 'Parceiro inativado com sucesso!'}), 200
+
+    @app.route('/parceiro/confirmar/<token>', methods=['GET'])
+    def confirmar_email_estudante(token):
+        email = verificar_token_confirmacao(token)
+        if not email:
+            return jsonify({'message': 'Token inválido ou expirado.'}), 400
+
+        parceiro = Parceiro.query.filter_by(email=email).first()
+        if not parceiro:
+            return jsonify({'message': 'Usuário não encontrado.'}), 404
+
+        if parceiro.fl_ativo == 1:
+            return jsonify({'message': 'Usuário já confirmado.'}), 400
+
+        parceiro.fl_ativo = 1
+        db.session.commit()
+        return jsonify({'message': 'Cadastro confirmado com sucesso!'}), 200

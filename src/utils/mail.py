@@ -8,11 +8,14 @@ import os
 mail = Mail()
 
 
-def enviar_email_confirmacao_arquiteto(email, nome):
+def enviar_email_confirmacao(email, nome):
  try:
      token = gerar_token_confirmacao(email)
-     dominio = urlparse(request.base_url)
-     link_confirmacao = f"https://{dominio}/arquiteto/confirmar/{token}"
+     parsed_url = urlparse(request.base_url)
+     path_base = parsed_url.path.split('/')[1]
+     dominio = parsed_url.netloc
+
+     link_confirmacao = f"https://{dominio}/{path_base}/confirmar/{token}"
 
      msg = Message(
          subject="Confirmação de Cadastro",
