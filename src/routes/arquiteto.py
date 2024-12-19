@@ -1,4 +1,6 @@
 import hashlib
+import re
+
 from datetime import datetime, timedelta
 from email_validator import validate_email, EmailNotValidError
 from flask import request, jsonify
@@ -30,6 +32,11 @@ def registro_rota_arquiteto(app, token_authenticator):
         if cpf_existente:
             return jsonify({'message': 'Arquiteto já cadastrado.'}), 400
 
+        nome = data.get('nome')
+        if nome:
+            if not re.match(r'^[A-Za-z\s]+$', nome):
+                return jsonify({'message': 'O nome deve conter apenas letras.'}), 400
+
         email = data.get('email')
         try:
             valid_email = validate_email(email)
@@ -44,7 +51,7 @@ def registro_rota_arquiteto(app, token_authenticator):
         endereco_domain = EnderecoDomain(data.get('endereco'))
         endereco = endereco_domain.save_endereco()
         novo_arquiteto = Arquiteto(
-            nome=data['nome'],
+            nome=nome,
             cpf=data['cpf'],
             matricula=data['matricula'],
             celular=data['celular'],
@@ -62,7 +69,7 @@ def registro_rota_arquiteto(app, token_authenticator):
         db.session.commit()
 
         try:
-            enviar_email_confirmacao(data['email'], data['nome'])
+            enviar_email_confirmacao(data['email'], data['nome'], 'arquiteto')
         except Exception as e:
             return jsonify({
                 'message': 'Arquiteto criado com sucesso, mas houve um problema ao enviar o email de confirmação.',

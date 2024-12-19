@@ -1,3 +1,5 @@
+import re
+
 from crypt import methods
 from email_validator import validate_email, EmailNotValidError
 from flask import request, jsonify
@@ -8,6 +10,7 @@ from domain.endereco import EnderecoDomain
 from model.administrador import Administrador
 from model.endereco import Endereco
 from utils.mail import enviar_email_confirmacao
+from utils.token import verificar_token_confirmacao
 
 
 def registro_rota_administrador(app, token_authenticator):
@@ -55,7 +58,7 @@ def registro_rota_administrador(app, token_authenticator):
         db.session.add(novo_administrador)
         db.session.commit()
         try:
-            enviar_email_confirmacao(data['email'], data['nome'])
+            enviar_email_confirmacao(data['email'], data['nome'], 'administrador')
         except Exception as e:
             return jsonify({
                 'message': 'Admnistrador criado com sucesso, mas houve um problema ao enviar o email de confirmação.',

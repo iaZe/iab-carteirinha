@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask
+from flask_mail import Mail, Message
 
 from database.sessao import db
 from routes.administrador import registro_rota_administrador
@@ -9,6 +10,9 @@ from routes.login import registro_rota_login
 from routes.usuario import registro_rota_usuario
 from routes.qrcode import registro_rota_qrcode
 from routes.carteira import registro_rota_carteira
+from routes.parceiro import registro_rota_parceiro
+from routes.beneficio import registro_rota_beneficio
+from utils.mail import mail, enviar_email_confirmacao
 from settings.config import Config
 from settings.jwt_manager import JWTManager
 from settings.limiter import RateLimiter
@@ -20,6 +24,8 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    mail.init_app(app)
 
     db.init_app(app)
     # Segurança do codigo
@@ -35,5 +41,7 @@ def create_app():
     registro_rota_login(app, jwt_manager, rate_limiter)
     registro_rota_administrador(app, token_authenticator)
     registro_rota_carteira(app, token_authenticator)
+    registro_rota_parceiro(app, token_authenticator)
+    registro_rota_beneficio(app, token_authenticator)
 
     return app

@@ -1,4 +1,5 @@
 import hashlib
+import re
 from datetime import datetime
 from email_validator import validate_email, EmailNotValidError
 from flask import request, jsonify
@@ -65,7 +66,7 @@ def registro_rota_estudante(app, token_authenticator):
         db.session.commit()
 
         try:
-            enviar_email_confirmacao(data['email'], data['nome'])
+            enviar_email_confirmacao(data['email'], data['nome'], 'estudante')
         except Exception as e:
             return jsonify({
                 'message': 'Estudante criado com sucesso, mas houve um problema ao enviar o email de confirmação.',

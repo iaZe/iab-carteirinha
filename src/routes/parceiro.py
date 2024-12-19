@@ -7,6 +7,8 @@ from database.sessao import db
 from domain.endereco import EnderecoDomain
 from model.parceiro import Parceiro
 from settings.token_auth import TokenAuthenticator
+from utils.mail import enviar_email_confirmacao
+from utils.token import verificar_token_confirmacao
 
 
 def registro_rota_parceiro(app, token_authenticator):
@@ -57,7 +59,7 @@ def registro_rota_parceiro(app, token_authenticator):
         db.session.commit()
 
         try:
-            enviar_email_confirmacao(data['email'], data['nome'])
+            enviar_email_confirmacao(data['email'], data['nome'], 'parceiro')
         except Exception as e:
             return jsonify({
                 'message': 'Parceiro cadastrado com sucesso, mas houve um problema ao enviar o email de confirmação.',
@@ -149,7 +151,7 @@ def registro_rota_parceiro(app, token_authenticator):
         return jsonify({'message': 'Parceiro inativado com sucesso!'}), 200
 
     @app.route('/parceiro/confirmar/<token>', methods=['GET'])
-    def confirmar_email_estudante(token):
+    def confirmar_email_parceiro(token):
         email = verificar_token_confirmacao(token)
         if not email:
             return jsonify({'message': 'Token inválido ou expirado.'}), 400
