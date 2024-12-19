@@ -1,12 +1,16 @@
-from crypt import methods
+import re
 
+from crypt import methods
+from email_validator import validate_email, EmailNotValidError
 from flask import request, jsonify
+from validate_docbr import CPF
 
 from database.sessao import db
 from domain.endereco import EnderecoDomain
 from model.administrador import Administrador
 from model.endereco import Endereco
-from validate_docbr import CPF
+from utils.mail import enviar_email_confirmacao
+from utils.token import verificar_token_confirmacao
 
 
 def registro_rota_administrador(app, token_authenticator):
@@ -25,24 +29,43 @@ def registro_rota_administrador(app, token_authenticator):
         if cpf_existente:
             return jsonify({'message': 'Administrador já cadastrado.'}), 400
 
+        email = data.get('email')
+        try:
+            valid_email = validate_email(email)
+            email_normalizado = valid_email.email
+        except EmailNotValidError as e:
+            return jsonify({'message': f'E-mail inválido: {str(e)}'}), 400
+
         email_existente = Administrador.query.filter_by(email=data['email']).first()
         if email_existente:
             return jsonify({'message': 'E-mail já cadastrado'}), 400
+
+        nome = data.get('nome')
+        if nome:
+            if not re.match(r'^[A-Za-z\s]+$', nome):
+                return jsonify({'message': 'O nome deve conter apenas letras.'}), 400
 
         endereco_domain = EnderecoDomain(data.get('endereco'))
         endereco = endereco_domain.save_endereco()
 
         novo_administrador = Administrador(
-            nome=data['nome'],
-            cpf=data['cpf'],
+            nome=nome,
+            cpf=cpf,
             endereco_id=endereco.id,
-            email=data['email'],
-            fl_ativo=1
+            email=email_normalizado,
+            fl_ativo=0
         )
         db.session.add(novo_administrador)
         db.session.commit()
-        return jsonify({"message": "Administrador criado com sucesso!"}), 201
+        try:
+            enviar_email_confirmacao(data['email'], data['nome'], 'administrador')
+        except Exception as e:
+            return jsonify({
+                'message': 'Admnistrador criado com sucesso, mas houve um problema ao enviar o email de confirmação.',
+                'error': str(e)
+            }), 201
 
+        return jsonify({'message': 'Dados salvos, confirme seu cadastro no link enviado por email.'}), 201
 
     @app.route('/administrador/buscar')
     @token_authenticator.token_required
@@ -114,7 +137,7 @@ def registro_rota_administrador(app, token_authenticator):
 
         return jsonify({'message': 'Administrador atualizado com sucesso!'}), 200
 
-    @app.route('/administrador/excluir/<int:id>', methods = ['PUT'])
+    @app.route('/administrador/excluir/<int:id>', methods=['PUT'])
     @token_authenticator.token_required
     def excluir_administrador(id, user_id=None):
         administrador = Administrador.query.get(id)
@@ -126,3 +149,20 @@ def registro_rota_administrador(app, token_authenticator):
         db.session.commit()
 
         return jsonify({'message': 'Administrador inativado com sucesso!'}), 200
+
+    @app.route('/administrador/confirmar/<token>', methods=['GET'])
+    def confirmar_email_administrador(token):
+        email = verificar_token_confirmacao(token)
+        if not email:
+            return jsonify({'message': 'Token inválido ou expirado.'}), 400
+
+        administrador = Administrador.query.filter_by(email=email).first()
+        if not administrador:
+            return jsonify({'message': 'Usuário não encontrado.'}), 404
+
+        if administrador.fl_ativo == 1:
+            return jsonify({'message': 'Usuário já confirmado.'}), 400
+
+        administrador.fl_ativo = 1
+        db.session.commit()
+        return jsonify({'message': 'Cadastro confirmado com sucesso!'}), 200

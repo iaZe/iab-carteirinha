@@ -1,9 +1,11 @@
+from email_validator import validate_email, EmailNotValidError
 from flask import request, jsonify
-from werkzeug.security import generate_password_hash
 from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.security import generate_password_hash
 
 from database.sessao import db
 from model.login import Login
+
 
 def registro_rota_usuario(app):
     """User routes register"""
@@ -13,14 +15,21 @@ def registro_rota_usuario(app):
         try:
             data = request.get_json()
 
-            if not data or not data.get('email') or not data.get('senha'):
+            email = data.get('email')
+            try:
+                valid_email = validate_email(email)
+                email_normalizado = valid_email.email
+            except EmailNotValidError as e:
+                return jsonify({'message': f'E-mail inválido: {str(e)}'}), 400
+
+            if not data or not email_normalizado or not data.get('senha'):
                 return jsonify({'message': 'Faltam dados obrigatórios!'}), 400
 
-            if Login.query.filter_by(email=data['email']).first():
+            if Login.query.filter_by(email=email_normalizado).first():
                 return jsonify({'message': 'Usuário já existe!'}), 400
 
             hashed_password = generate_password_hash(data['senha'], method='pbkdf2:sha256')
-            novo_login = Login(email=data['email'], senha=hashed_password)
+            novo_login = Login(email=email_normalizado, senha=hashed_password)
             db.session.add(novo_login)
             db.session.commit()
 
@@ -95,3 +104,27 @@ def registro_rota_usuario(app):
 
         except Exception as e:
             return jsonify({'message': 'Erro interno no servidor', 'error': str(e)}), 500
+
+    @app.route('/usuario/buscar')
+    def buscar_usuario():
+        email = request.args.get('email')
+        ativo = request.args.get('ativo')
+
+        query = Login.query
+
+        if email:
+            query = query.filter(Login.email.ilike(f'%{email}%'))
+        if ativo:
+            query = query.filter_by(ativo=ativo)
+
+        usuarios = query.all()
+
+        resultados = []
+        for usuario in usuarios:
+            result = {
+                'id': usuario.id,
+                'email': usuario.email,
+                'ativo': usuario.ativo
+            }
+            resultados.append(result)
+        return jsonify(resultados), 200

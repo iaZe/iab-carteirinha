@@ -7,44 +7,21 @@ import os
 
 mail = Mail()
 
-
-def enviar_email_confirmacao_arquiteto(email, nome):
+def enviar_email_confirmacao(email, nome, entidade):
  try:
      token = gerar_token_confirmacao(email)
-     dominio = urlparse(request.base_url)
-     link_confirmacao = f"https://{dominio}/arquiteto/confirmar/{token}"
 
-     msg = Message(
-         subject="Confirmação de Cadastro",
-         recipients=[email],
-         body=f"""Olá {nome},
-
-Por favor, clique no link abaixo para confirmar seu cadastro:
-{link_confirmacao}
-
-Obrigado por se juntar a nós!
-"""
+     link_confirmacao = url_for(
+         f'confirmar_email_{entidade}',
+         token=token,
+         _external=True
      )
-     mail.send(msg)
- except Exception as e:
-     print(f"Erro ao enviar email: {e}")
-
-def enviar_email_confirmacao_estudante(email, nome):
- try:
-     token = gerar_token_confirmacao(email)
-     if os.getenv('FLASK_ENV') == 'production':
-         link_confirmacao = f"https://iabapptest1-87j8tiit.b4a.run/estudante/confirmar/{token}"
-     else:
-         link_confirmacao = f"http://127.0.0.1:5000/estudante/confirmar/{token}"
-
      msg = Message(
          subject="Confirmação de Cadastro",
          recipients=[email],
          body=f"""Olá {nome},
-
 Por favor, clique no link abaixo para confirmar seu cadastro:
 {link_confirmacao}
-
 Obrigado por se juntar a nós!
 """
      )

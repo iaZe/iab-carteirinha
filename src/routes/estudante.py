@@ -1,17 +1,16 @@
+import hashlib
+import re
 from datetime import datetime
-from utils.mail import enviar_email_confirmacao_estudante
-from utils.token import verificar_token_confirmacao
-
+from email_validator import validate_email, EmailNotValidError
 from flask import request, jsonify
+from validate_docbr import CPF
 
 from database.sessao import db
 from domain.endereco import EnderecoDomain
 from model.estudante import Estudante
-from validate_docbr import CPF
-from email_validator import validate_email, EmailNotValidError
-import hashlib
-
 from settings.token_auth import TokenAuthenticator
+from utils.mail import enviar_email_confirmacao
+from utils.token import verificar_token_confirmacao
 
 
 def registro_rota_estudante(app, token_authenticator):
@@ -41,11 +40,16 @@ def registro_rota_estudante(app, token_authenticator):
         if email_existente:
             return jsonify({'message': 'E-mail já cadastrado'}), 400
 
+        nome = data.get('nome')
+        if nome:
+            if not re.match(r'^[A-Za-z\s]+$', nome):
+                return jsonify({'message': 'O nome deve conter apenas letras.'}), 400
+
         endereco_domain = EnderecoDomain(data.get('endereco'))
         endereco = endereco_domain.save_endereco()
         novo_estudante = Estudante(
-            nome=data['nome'],
-            cpf=data['cpf'],
+            nome=nome,
+            cpf=cpf,
             celular=data['celular'],
             fixo=data['fixo'],
             data_cadastro=datetime.now(),
@@ -62,7 +66,7 @@ def registro_rota_estudante(app, token_authenticator):
         db.session.commit()
 
         try:
-            enviar_email_confirmacao_estudante(data['email'], data['nome'])
+            enviar_email_confirmacao(data['email'], data['nome'], 'estudante')
         except Exception as e:
             return jsonify({
                 'message': 'Estudante criado com sucesso, mas houve um problema ao enviar o email de confirmação.',
