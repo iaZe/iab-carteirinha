@@ -13,6 +13,7 @@ from routes.carteira import registro_rota_carteira
 from routes.parceiro import registro_rota_parceiro
 from routes.beneficio import registro_rota_beneficio
 from utils.mail import mail, enviar_email_confirmacao
+from services.envio_email_service import iniciar_agendador
 from settings.config import Config
 from settings.jwt_manager import JWTManager
 from settings.limiter import RateLimiter
@@ -26,6 +27,8 @@ def create_app():
     app.config.from_object(Config)
 
     mail.init_app(app)
+
+    iniciar_agendador(app)
 
     db.init_app(app)
     # Segurança do codigo
