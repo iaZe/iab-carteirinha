@@ -78,7 +78,7 @@ def registro_rota_carteira(app, token_authenticator):
             }
             resultados.append(result)
 
-            return jsonify(resultados), 200
+        return jsonify(resultados), 200
 
     @app.route('/carteira/atualizar/<int:id>', methods=['PUT'])
     @token_authenticator.token_required
